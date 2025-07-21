@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+
+import { envConfig } from '@/common/config/envConfig';
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { envConfig } from './common/config/envConfig';
 
 @Module({
   imports: [ConfigModule.forRoot({ load: [envConfig] })],
