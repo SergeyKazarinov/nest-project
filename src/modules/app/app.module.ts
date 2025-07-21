@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
+import { OffersModule } from '@/modules/offers';
 import { UsersModule } from '@/modules/users';
 import { WishesModule } from '@/modules/wishes';
 import { WishlistsModule } from '@/modules/wishlists';
@@ -11,7 +12,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 
 @Module({
-  imports: [ConfigModule.forRoot({ load: [envConfig] }), UsersModule, WishesModule, WishlistsModule],
+  imports: [ConfigModule.forRoot({ load: [envConfig] }), UsersModule, WishesModule, WishlistsModule, OffersModule],
   controllers: [AppController],
   providers: [AppService],
 })
