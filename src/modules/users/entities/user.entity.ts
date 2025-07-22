@@ -1,3 +1,4 @@
+import { IsEmail, IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
 import { Column, Entity, OneToMany } from 'typeorm';
 
 import { Offer } from '@/modules/offers';
@@ -12,25 +13,35 @@ export class User extends BaseEntity {
     length: 30,
     nullable: false,
   })
+  @Length(2, 30)
+  @IsNotEmpty()
+  @IsString()
   username: string;
 
   @Column({
     length: 300,
     default: 'Пока ничего не рассказал о себе',
   })
+  @Length(2, 1500)
+  @IsString()
   about: string;
 
+  @IsUrl()
   @Column({
     default: 'https://i.pravatar.cc/300',
   })
   avatar: string;
 
+  @IsEmail()
+  @IsNotEmpty()
   @Column({
     unique: true,
     nullable: false,
   })
   email: string;
 
+  @IsNotEmpty()
+  @IsString()
   @Column({
     nullable: false,
   })

@@ -1,3 +1,4 @@
+import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator';
 import { Column, ManyToOne, OneToMany } from 'typeorm';
 
 import { User } from '@/modules/users';
@@ -15,10 +16,13 @@ export class Offer extends BaseEntity {
   @Column({
     type: 'money',
   })
+  @IsNumber()
   amount: number;
 
   @Column({
     type: 'boolean',
   })
+  @IsBoolean()
+  @IsNotEmpty()
   hidden: boolean;
 }
