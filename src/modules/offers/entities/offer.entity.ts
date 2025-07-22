@@ -5,6 +5,7 @@ import { User } from '@/modules/users';
 import { Wish } from '@/modules/wishes';
 
 import { BaseEntity } from '@/common/entities/baseEntity.entity';
+import { IsPrice } from '@/common/utils/validation/isPrice';
 
 export class Offer extends BaseEntity {
   @ManyToOne(() => User, (user) => user.offers)
@@ -17,6 +18,7 @@ export class Offer extends BaseEntity {
     type: 'money',
   })
   @IsNumber()
+  @IsPrice()
   amount: number;
 
   @Column({
