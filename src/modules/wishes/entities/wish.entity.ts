@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, IsUrl, Length } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { Offer } from '@/modules/offers/entities/offer.entity';
@@ -56,5 +56,6 @@ export class Wish extends BaseEntity {
   @Column({
     nullable: true,
   })
+  @IsOptional()
   copied: number;
 }

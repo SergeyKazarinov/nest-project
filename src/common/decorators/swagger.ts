@@ -5,13 +5,13 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiRequestTimeoutResponse,
 } from '@nestjs/swagger';
 
 import { ErrorMessageDto } from '../dto/error.dto';
 
-export const ApiCreateOperation = (responseType: Type) =>
+export const ApiCreateOperation = (summary: string, responseType: Type) =>
   applyDecorators(
+    ApiOperation({ summary }),
     ApiCreatedResponse({
       description: 'Ресурс успешно создан',
       type: responseType,
@@ -20,8 +20,14 @@ export const ApiCreateOperation = (responseType: Type) =>
       description: 'Некорректные данные',
       type: ErrorMessageDto,
     }),
-    ApiRequestTimeoutResponse({
-      description: 'Время ожидания запроса истекло',
+  );
+
+export const ApiFindLastOperation = (summary: string, responseType: Type) =>
+  applyDecorators(
+    ApiOperation({ summary }),
+    ApiOkResponse({
+      description: 'Список ресурсов успешно получен',
+      type: [responseType],
     }),
   );
 

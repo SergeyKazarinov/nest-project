@@ -18,8 +18,14 @@ export class WishesService {
     return {};
   }
 
-  findAll() {
-    return `This action returns all wishes`;
+  async findLast() {
+    return await this.wishRepository.find({
+      relations: ['owner', 'offers'],
+      order: {
+        id: 'DESC',
+      },
+      take: 1,
+    });
   }
 
   findOne(id: number) {

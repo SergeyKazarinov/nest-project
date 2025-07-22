@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 
-import { ApiCreateOperation } from '@/common/decorators/swagger';
+import { ApiCreateOperation, ApiFindLastOperation } from '@/common/decorators/swagger';
 
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
@@ -12,14 +12,15 @@ export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   @Post()
-  @ApiCreateOperation(Wish)
+  @ApiCreateOperation('Создание подарка', Wish)
   create(@Body() createWishDto: CreateWishDto) {
     return this.wishesService.create(createWishDto);
   }
 
-  @Get()
-  findAll() {
-    return this.wishesService.findAll();
+  @Get('/last')
+  @ApiFindLastOperation('Получение последнего созданного подарка', Wish)
+  findLast() {
+    return this.wishesService.findLast();
   }
 
   @Get(':id')
