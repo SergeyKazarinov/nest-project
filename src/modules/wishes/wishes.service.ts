@@ -24,12 +24,18 @@ export class WishesService {
       order: {
         id: 'DESC',
       },
-      take: 1,
+      take: 40,
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wish`;
+  async findTop() {
+    return await this.wishRepository.find({
+      relations: ['owner', 'offers'],
+      order: {
+        copied: 'DESC',
+      },
+      take: 20,
+    });
   }
 
   update(id: number, updateWishDto: UpdateWishDto) {

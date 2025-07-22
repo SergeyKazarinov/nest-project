@@ -54,7 +54,8 @@ export class Wish extends BaseEntity {
   offers: Offer[];
 
   @Column({
-    nullable: true,
+    type: 'integer',
+    default: 0,
   })
   @IsOptional()
   copied: number;

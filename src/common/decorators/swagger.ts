@@ -22,7 +22,7 @@ export const ApiCreateOperation = (summary: string, responseType: Type) =>
     }),
   );
 
-export const ApiFindLastOperation = (summary: string, responseType: Type) =>
+export const ApiFindOperation = (summary: string, responseType: Type) =>
   applyDecorators(
     ApiOperation({ summary }),
     ApiOkResponse({

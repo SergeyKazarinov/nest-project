@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 
-import { ApiCreateOperation, ApiFindLastOperation } from '@/common/decorators/swagger';
+import { ApiCreateOperation, ApiFindOperation } from '@/common/decorators/swagger';
 
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
@@ -18,14 +18,15 @@ export class WishesController {
   }
 
   @Get('/last')
-  @ApiFindLastOperation('Получение последнего созданного подарка', Wish)
+  @ApiFindOperation('Получение списка последних подарков', Wish)
   findLast() {
     return this.wishesService.findLast();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishesService.findOne(+id);
+  @Get('/top')
+  @ApiFindOperation('Получение списка популярных подарков', Wish)
+  findTop() {
+    return this.wishesService.findTop();
   }
 
   @Patch(':id')
