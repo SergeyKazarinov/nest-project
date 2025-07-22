@@ -1,10 +1,10 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { Offer } from '@/modules/offers';
-import { User } from '@/modules/users';
-import { Wish } from '@/modules/wishes';
-import { Wishlist } from '@/modules/wishlists';
+import { Offer } from '@/modules/offers/entities/offer.entity';
+import { User } from '@/modules/users/entities/user.entity';
+import { Wish } from '@/modules/wishes/entities/wish.entity';
+import { Wishlist } from '@/modules/wishlists/entities/wishlist.entity';
 
 export const dbConnectConfig = (configService: ConfigService): TypeOrmModuleOptions => ({
   type: configService.get<string>('database.type') as 'postgres',

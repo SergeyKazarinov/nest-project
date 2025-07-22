@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsNumber, IsString, IsUrl, Length } from 'class-validator';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
-import { Offer } from '@/modules/offers';
-import { User } from '@/modules/users';
+import { Offer } from '@/modules/offers/entities/offer.entity';
+import { User } from '@/modules/users/entities/user.entity';
 
 import { BaseEntity } from '@/common/entities/baseEntity.entity';
 import { IsPrice } from '@/common/utils/validation/isPrice';

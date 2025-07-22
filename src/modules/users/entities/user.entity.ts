@@ -1,9 +1,9 @@
 import { IsEmail, IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
 import { Column, Entity, OneToMany } from 'typeorm';
 
-import { Offer } from '@/modules/offers';
-import { Wish } from '@/modules/wishes';
-import { Wishlist } from '@/modules/wishlists';
+import { Offer } from '@/modules/offers/entities/offer.entity';
+import { Wish } from '@/modules/wishes/entities/wish.entity';
+import { Wishlist } from '@/modules/wishlists/entities/wishlist.entity';
 
 import { BaseEntity } from '@/common/entities/baseEntity.entity';
 

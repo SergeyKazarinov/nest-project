@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
 import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
-import { Wish } from '@/modules/wishes';
+import { Wish } from '@/modules/wishes/entities/wish.entity';
 
 import { BaseEntity } from '@/common/entities/baseEntity.entity';
 

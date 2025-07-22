@@ -1,8 +1,8 @@
 import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator';
 import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
-import { User } from '@/modules/users';
-import { Wish } from '@/modules/wishes';
+import { User } from '@/modules/users/entities/user.entity';
+import { Wish } from '@/modules/wishes/entities/wish.entity';
 
 import { BaseEntity } from '@/common/entities/baseEntity.entity';
 import { IsPrice } from '@/common/utils/validation/isPrice';
