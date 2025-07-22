@@ -1,19 +1,29 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { OffersModule } from '@/modules/offers';
 import { UsersModule } from '@/modules/users';
 import { WishesModule } from '@/modules/wishes';
 import { WishlistsModule } from '@/modules/wishlists';
 
+import { dbConnectConfig } from '@/common/config/dbConnect';
 import { envConfig } from '@/common/config/envConfig';
 
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-
 @Module({
-  imports: [ConfigModule.forRoot({ load: [envConfig] }), UsersModule, WishesModule, WishlistsModule, OffersModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    ConfigModule.forRoot({ load: [envConfig] }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: dbConnectConfig,
+    }),
+    UsersModule,
+    WishesModule,
+    WishlistsModule,
+    OffersModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

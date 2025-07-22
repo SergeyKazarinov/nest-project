@@ -1,10 +1,11 @@
 import { IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
-import { Column, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { Wish } from '@/modules/wishes';
 
 import { BaseEntity } from '@/common/entities/baseEntity.entity';
 
+@Entity()
 export class Wishlist extends BaseEntity {
   @Column({
     length: 250,

@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString, IsUrl, Length } from 'class-validator';
-import { Column, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToOne } from 'typeorm';
 
 import { Offer } from '@/modules/offers';
 import { User } from '@/modules/users';
@@ -7,6 +7,7 @@ import { User } from '@/modules/users';
 import { BaseEntity } from '@/common/entities/baseEntity.entity';
 import { IsPrice } from '@/common/utils/validation/isPrice';
 
+@Entity()
 export class Wish extends BaseEntity {
   @Column({
     length: 250,
