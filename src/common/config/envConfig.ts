@@ -8,4 +8,5 @@ export const envConfig = () => ({
     password: process.env.DATABASE_PASSWORD,
     database: process.env.DATABASE_NAME,
   },
+  isDev: process.env.IS_DEV === 'true',
 });
