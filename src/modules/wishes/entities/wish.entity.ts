@@ -34,6 +34,7 @@ export class Wish extends BaseEntity {
 
   @Column({
     type: 'money',
+    nullable: true,
   })
   @IsNumber()
   @IsPrice()
@@ -52,6 +53,8 @@ export class Wish extends BaseEntity {
   @ManyToOne(() => Offer, (offer) => offer.item)
   offers: Offer[];
 
-  @Column()
+  @Column({
+    nullable: true,
+  })
   copied: number;
 }
