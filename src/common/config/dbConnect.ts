@@ -15,4 +15,7 @@ export const dbConnectConfig = (configService: ConfigService): TypeOrmModuleOpti
   database: configService.get<string>('database.database'),
   synchronize: configService.get<boolean>('isDev'),
   entities: [User, Wish, Offer, Wishlist],
+  extra: {
+    timezone: 'UTC',
+  },
 });

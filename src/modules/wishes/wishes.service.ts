@@ -1,29 +1,85 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
+import { Wish } from './entities/wish.entity';
 
 @Injectable()
 export class WishesService {
-  create(createWishDto: CreateWishDto) {
-    console.log(createWishDto);
-    return 'This action adds a new wish';
+  constructor(
+    @InjectRepository(Wish)
+    private readonly wishRepository: Repository<Wish>,
+  ) {}
+
+  async create(createWishDto: CreateWishDto) {
+    await this.wishRepository.save(createWishDto);
+    return {};
   }
 
-  findAll() {
-    return `This action returns all wishes`;
+  async findLast() {
+    return await this.wishRepository.find({
+      relations: ['owner', 'offers'],
+      order: {
+        createdAt: 'DESC',
+      },
+      take: 40,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} wish`;
+  async findTop() {
+    return await this.wishRepository.find({
+      relations: ['owner', 'offers'],
+      order: {
+        copied: 'DESC',
+      },
+      take: 20,
+    });
   }
 
-  update(id: number, updateWishDto: UpdateWishDto) {
-    console.log(updateWishDto);
-    return `This action updates a #${id} wish`;
+  async findOne(id: number) {
+    return await this.wishRepository.findOne({
+      where: { id },
+      relations: ['owner', 'offers'],
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wish`;
+  async update(id: number, updateWishDto: UpdateWishDto) {
+    await this.wishRepository.update(id, updateWishDto);
+    return await this.wishRepository.findOne({
+      where: { id },
+      relations: ['owner', 'offers'],
+    });
+  }
+
+  async remove(id: number) {
+    const wish = await this.wishRepository.findOne({
+      where: { id },
+    });
+
+    await this.wishRepository.delete(id);
+    return wish;
+  }
+
+  async copy(id: number) {
+    const wish = await this.wishRepository.findOne({
+      where: { id },
+    });
+
+    if (!wish) {
+      throw new NotFoundException('Подарок не найден');
+    }
+
+    const newWish = {
+      ...wish,
+      copied: 0,
+      id: undefined,
+    };
+
+    await this.create(newWish);
+    await this.wishRepository.increment({ id }, 'copied', 1);
+
+    return newWish;
   }
 }
