@@ -13,9 +13,10 @@ export class UsersService {
     private UsersRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
-    console.log(createUserDto);
-    return 'This action adds a new user';
+  async create(createUserDto: CreateUserDto) {
+    const user = this.UsersRepository.create(createUserDto);
+    const savedUser = await this.UsersRepository.save(user);
+    return savedUser;
   }
 
   findAll() {
@@ -34,6 +35,13 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
+    return user;
+  }
+
+  async findByUsername(username: string) {
+    const user = await this.UsersRepository.findOne({
+      where: { username },
+    });
     return user;
   }
 
