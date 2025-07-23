@@ -5,7 +5,7 @@ import { Offer } from '@/modules/offers/entities/offer.entity';
 import { Wish } from '@/modules/wishes/entities/wish.entity';
 import { Wishlist } from '@/modules/wishlists/entities/wishlist.entity';
 
-import { BaseEntity } from '@/common/entities/baseEntity.entity';
+import { BaseEntity } from '@/common/entities/base-entity.entity';
 
 @Entity()
 export class User extends BaseEntity {

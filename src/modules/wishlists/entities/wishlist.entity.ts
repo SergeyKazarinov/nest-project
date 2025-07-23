@@ -3,7 +3,7 @@ import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 
 import { Wish } from '@/modules/wishes/entities/wish.entity';
 
-import { BaseEntity } from '@/common/entities/baseEntity.entity';
+import { BaseEntity } from '@/common/entities/base-entity.entity';
 
 @Entity()
 export class Wishlist extends BaseEntity {

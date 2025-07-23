@@ -4,8 +4,8 @@ import { Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 import { User } from '@/modules/users/entities/user.entity';
 import { Wish } from '@/modules/wishes/entities/wish.entity';
 
-import { BaseEntity } from '@/common/entities/baseEntity.entity';
-import { IsPrice } from '@/common/utils/validation/isPrice';
+import { BaseEntity } from '@/common/entities/base-entity.entity';
+import { IsPrice } from '@/common/utils/validation/is-price';
 
 @Entity()
 export class Offer extends BaseEntity {

@@ -7,8 +7,8 @@ import { UsersModule } from '@/modules/users/users.module';
 import { WishesModule } from '@/modules/wishes/wishes.module';
 import { WishlistsModule } from '@/modules/wishlists/wishlists.module';
 
-import { dbConnectConfig } from '@/common/config/dbConnect';
-import { envConfig } from '@/common/config/envConfig';
+import { dbConnectConfig } from '@/common/config/db-connect';
+import { envConfig } from '@/common/config/env-config';
 
 @Module({
   imports: [
