@@ -4,8 +4,8 @@ import { Check, Column, Entity, ManyToOne } from 'typeorm';
 import { Offer } from '@/modules/offers/entities/offer.entity';
 import { User } from '@/modules/users/entities/user.entity';
 
-import { BaseEntity } from '@/common/entities/baseEntity.entity';
-import { IsPrice } from '@/common/utils/validation/isPrice';
+import { BaseEntity } from '@/common/entities/base-entity.entity';
+import { IsPrice } from '@/common/utils/validation/is-price';
 
 @Entity()
 @Check('CHK_WISH_PRICE_POSITIVE', 'price >= 0')

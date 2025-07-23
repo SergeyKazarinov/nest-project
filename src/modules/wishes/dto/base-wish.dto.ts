@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsString, IsUrl, Length } from 'class-validator';
 
-import { IsPrice } from '@/common/utils/validation/isPrice';
+import { IsPrice } from '@/common/utils/validation/is-price';
 
 export class BaseWishDto {
   @ApiProperty({
