@@ -1,6 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 
-import { ApiCreateOperation, ApiFindOperation } from '@/common/decorators/swagger';
+import {
+  ApiCreateOperation,
+  ApiDeleteOperation,
+  ApiFindOperation,
+  ApiUpdateOperation,
+} from '@/common/decorators/swagger';
 
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
@@ -36,11 +41,13 @@ export class WishesController {
   }
 
   @Patch(':id')
+  @ApiUpdateOperation('Обновление подарка', Wish)
   update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
     return this.wishesService.update(+id, updateWishDto);
   }
 
   @Delete(':id')
+  @ApiDeleteOperation('Удаление подарка')
   remove(@Param('id') id: string) {
     return this.wishesService.remove(+id);
   }

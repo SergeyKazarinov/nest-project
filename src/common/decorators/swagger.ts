@@ -26,26 +26,8 @@ export const ApiFindOperation = (summary: string, responseType: Type) =>
   applyDecorators(
     ApiOperation({ summary }),
     ApiOkResponse({
-      description: 'Список ресурсов успешно получен',
+      description: 'Запрос выполнен успешно',
       type: [responseType],
-    }),
-  );
-
-export const ApiFindAllOperation = (summary: string, responseType: Type) =>
-  applyDecorators(
-    ApiOperation({ summary }),
-    ApiOkResponse({
-      description: 'Список ресурсов успешно получен',
-      type: [responseType],
-    }),
-  );
-
-export const ApiFindOneOperation = (summary: string, responseType: Type) =>
-  applyDecorators(
-    ApiOperation({ summary }),
-    ApiOkResponse({
-      description: 'Ресурс успешно найден',
-      type: responseType,
     }),
     ApiNotFoundResponse({
       description: 'Ресурс не найден',

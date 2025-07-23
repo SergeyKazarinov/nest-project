@@ -22,7 +22,7 @@ export class WishesService {
     return await this.wishRepository.find({
       relations: ['owner', 'offers'],
       order: {
-        id: 'DESC',
+        createdAt: 'DESC',
       },
       take: 40,
     });
@@ -45,12 +45,16 @@ export class WishesService {
     });
   }
 
-  update(id: number, updateWishDto: UpdateWishDto) {
-    console.log(updateWishDto);
-    return `This action updates a #${id} wish`;
+  async update(id: number, updateWishDto: UpdateWishDto) {
+    await this.wishRepository.update(id, updateWishDto);
+    return await this.wishRepository.findOne({
+      where: { id },
+      relations: ['owner', 'offers'],
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wish`;
+  async remove(id: number) {
+    await this.wishRepository.delete(id);
+    return {};
   }
 }
