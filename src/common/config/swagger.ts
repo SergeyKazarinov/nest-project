@@ -1,25 +1,26 @@
+import { HttpStatus } from '@nestjs/common';
 import { DocumentBuilder, SwaggerCustomOptions } from '@nestjs/swagger';
 
-import { ErrorMessageDto, ServerErrorMessageDto } from '../dto/error.dto';
+import { InternalServerErrorDto, NotFoundErrorDto, RequestTimeoutErrorDto } from '../dto/error.dto';
 
 export const swaggerConfig = new DocumentBuilder()
   .setTitle('NestJS API')
   .setDescription('NestJS API description')
   .setVersion('1.0')
   .addGlobalResponse({
-    status: 500,
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
     description: 'Внутренняя ошибка сервера',
-    type: ServerErrorMessageDto,
+    type: InternalServerErrorDto,
   })
   .addGlobalResponse({
-    status: 404,
+    status: HttpStatus.NOT_FOUND,
     description: 'Ресурс не найден',
-    type: ErrorMessageDto,
+    type: NotFoundErrorDto,
   })
   .addGlobalResponse({
-    status: 408,
+    status: HttpStatus.REQUEST_TIMEOUT,
     description: 'Время ожидания запроса истекло',
-    type: ErrorMessageDto,
+    type: RequestTimeoutErrorDto,
   })
   .build();
 

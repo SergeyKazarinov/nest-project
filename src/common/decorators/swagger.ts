@@ -1,13 +1,7 @@
 import { applyDecorators, Type } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-} from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 
-import { ErrorMessageDto } from '../dto/error.dto';
+import { BadRequestErrorDto } from '../dto/error.dto';
 
 export const ApiCreateOperation = (summary: string, responseType: Type) =>
   applyDecorators(
@@ -18,7 +12,7 @@ export const ApiCreateOperation = (summary: string, responseType: Type) =>
     }),
     ApiBadRequestResponse({
       description: 'Некорректные данные',
-      type: ErrorMessageDto,
+      type: BadRequestErrorDto,
     }),
   );
 
@@ -29,13 +23,9 @@ export const ApiFindOperation = (summary: string, responseType: Type) =>
       description: 'Запрос выполнен успешно',
       type: [responseType],
     }),
-    ApiNotFoundResponse({
-      description: 'Ресурс не найден',
-      type: ErrorMessageDto,
-    }),
     ApiBadRequestResponse({
       description: 'Некорректные параметры запроса',
-      type: ErrorMessageDto,
+      type: BadRequestErrorDto,
     }),
   );
 
@@ -46,13 +36,9 @@ export const ApiUpdateOperation = (summary: string, responseType: Type) =>
       description: 'Ресурс успешно обновлен',
       type: responseType,
     }),
-    ApiNotFoundResponse({
-      description: 'Ресурс не найден',
-      type: ErrorMessageDto,
-    }),
     ApiBadRequestResponse({
       description: 'Некорректные данные',
-      type: ErrorMessageDto,
+      type: BadRequestErrorDto,
     }),
   );
 
@@ -62,12 +48,8 @@ export const ApiDeleteOperation = (summary: string) =>
     ApiOkResponse({
       description: 'Ресурс успешно удален',
     }),
-    ApiNotFoundResponse({
-      description: 'Ресурс не найден',
-      type: ErrorMessageDto,
-    }),
     ApiBadRequestResponse({
       description: 'Некорректные параметры запроса',
-      type: ErrorMessageDto,
+      type: BadRequestErrorDto,
     }),
   );
