@@ -54,7 +54,11 @@ export class WishesService {
   }
 
   async remove(id: number) {
+    const wish = await this.wishRepository.findOne({
+      where: { id },
+    });
+
     await this.wishRepository.delete(id);
-    return {};
+    return wish;
   }
 }
