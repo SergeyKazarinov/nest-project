@@ -51,4 +51,10 @@ export class WishesController {
   remove(@Param('id') id: string) {
     return this.wishesService.remove(+id);
   }
+
+  @Post(':id/copy')
+  @ApiCreateOperation('Копирование подарка', Wish)
+  copy(@Param('id') id: string) {
+    return this.wishesService.copy(+id);
+  }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -60,5 +60,26 @@ export class WishesService {
 
     await this.wishRepository.delete(id);
     return wish;
+  }
+
+  async copy(id: number) {
+    const wish = await this.wishRepository.findOne({
+      where: { id },
+    });
+
+    if (!wish) {
+      throw new NotFoundException('Подарок не найден');
+    }
+
+    const newWish = {
+      ...wish,
+      copied: 0,
+      id: undefined,
+    };
+
+    await this.create(newWish);
+    await this.wishRepository.increment({ id }, 'copied', 1);
+
+    return newWish;
   }
 }
