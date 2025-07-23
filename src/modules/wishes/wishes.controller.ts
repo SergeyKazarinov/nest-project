@@ -29,6 +29,12 @@ export class WishesController {
     return this.wishesService.findTop();
   }
 
+  @Get(':id')
+  @ApiFindOperation('Получение подарка по id', Wish)
+  findOne(@Param('id') id: string) {
+    return this.wishesService.findOne(+id);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
     return this.wishesService.update(+id, updateWishDto);

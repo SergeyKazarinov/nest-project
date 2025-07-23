@@ -38,6 +38,13 @@ export class WishesService {
     });
   }
 
+  async findOne(id: number) {
+    return await this.wishRepository.findOne({
+      where: { id },
+      relations: ['owner', 'offers'],
+    });
+  }
+
   update(id: number, updateWishDto: UpdateWishDto) {
     console.log(updateWishDto);
     return `This action updates a #${id} wish`;
