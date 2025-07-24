@@ -19,6 +19,7 @@ export class AuthService {
         password: true,
       },
     });
+
     if (!user) {
       return null;
     }

@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
 import {
   ApiCreateOperation,
@@ -18,6 +20,7 @@ export class WishesController {
   constructor(private readonly wishesService: WishesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreateOperation('Создание подарка', Wish)
   create(@Body() createWishDto: CreateWishDto) {
@@ -25,6 +28,7 @@ export class WishesController {
   }
 
   @Get('/last')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiFindOperation('Получение списка последних подарков', Wish)
   findLast() {
@@ -32,6 +36,7 @@ export class WishesController {
   }
 
   @Get('/top')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiFindOperation('Получение списка популярных подарков', Wish)
   findTop() {
@@ -39,6 +44,7 @@ export class WishesController {
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiFindOperation('Получение подарка по id', Wish)
   findOne(@Param('id') id: string) {
@@ -46,6 +52,7 @@ export class WishesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiUpdateOperation('Обновление подарка', Wish)
   update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
@@ -53,6 +60,7 @@ export class WishesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiDeleteOperation('Удаление подарка')
   remove(@Param('id') id: string) {
@@ -60,6 +68,7 @@ export class WishesController {
   }
 
   @Post(':id/copy')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreateOperation('Копирование подарка', Wish)
   copy(@Param('id') id: string) {
