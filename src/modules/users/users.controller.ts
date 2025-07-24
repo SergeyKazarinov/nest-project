@@ -3,7 +3,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
-import { ApiFindOperation, ApiUpdateOperation } from '@/common/decorators/swagger';
+import { ApiDeleteOperation, ApiFindOperation, ApiUpdateOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
 
 import { Wish } from '../wishes/entities/wish.entity';
@@ -67,6 +67,9 @@ export class UsersController {
     return this.usersService.update(+id, updateUserDto);
   }
 
+  @ApiBearerAuth()
+  @ApiDeleteOperation('Удаление пользователя')
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
