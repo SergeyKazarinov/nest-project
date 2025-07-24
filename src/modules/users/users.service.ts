@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, ILike, Repository } from 'typeorm';
 
 import { hashPassword } from '@/common/utils/service/hash-password';
 
@@ -22,9 +22,11 @@ export class UsersService {
     return savedUser;
   }
 
-  findAll() {
-    // return this.UsersRepository.find();
-    return `This action returns all users`;
+  async findMany(query: string) {
+    const users = await this.UsersRepository.find({
+      where: [{ username: ILike(`%${query}%`) }, { email: ILike(`%${query}%`) }],
+    });
+    return users;
   }
 
   async findById(id: number) {

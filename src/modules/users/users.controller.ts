@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
@@ -8,6 +8,7 @@ import { RequestWithUser } from '@/common/types/request.types';
 
 import { Wish } from '../wishes/entities/wish.entity';
 
+import { FindUsersDto } from './dto/find-user.dtor';
 import { GetUserDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -57,14 +58,13 @@ export class UsersController {
     return this.usersService.findByUsername(username);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @ApiBearerAuth()
+  @ApiFindOperation('Поиск пользователей', GetUserDto, true)
+  @UseGuards(JwtAuthGuard)
+  @Post('find')
+  @HttpCode(200)
+  findMany(@Body() { query }: FindUsersDto) {
+    return this.usersService.findMany(query);
   }
 
   @ApiBearerAuth()
