@@ -67,9 +67,9 @@ export class UsersService {
     return updatedUser;
   }
 
-  async getMyWishes(id: number) {
+  async getUserWishes(username: string) {
     const user = await this.UsersRepository.findOne({
-      where: { id },
+      where: { username },
       relations: ['wishes'],
     });
     return user?.wishes ?? [];

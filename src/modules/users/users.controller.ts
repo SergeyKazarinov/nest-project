@@ -38,7 +38,15 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('me/wishes')
   async getMyWishes(@Req() req: RequestWithUser) {
-    return this.usersService.getMyWishes(req.user.id);
+    return this.usersService.getUserWishes(req.user.username);
+  }
+
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение списка желаний пользователя', Wish)
+  @UseGuards(JwtAuthGuard)
+  @Get(':username/wishes')
+  getUserWishes(@Param('username') username: string) {
+    return this.usersService.getUserWishes(username);
   }
 
   @ApiBearerAuth()
