@@ -41,14 +41,17 @@ export class UsersController {
     return this.usersService.getMyWishes(req.user.id);
   }
 
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение данных пользователя по username', GetUserDto)
+  @UseGuards(JwtAuthGuard)
+  @Get(':username')
+  findByUsername(@Param('username') username: string) {
+    return this.usersService.findByUsername(username);
+  }
+
   @Get()
   findAll() {
     return this.usersService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
   }
 
   @Patch(':id')

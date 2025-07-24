@@ -27,12 +27,8 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  async findOne(id: number) {
-    const user = await this.UsersRepository.findOne({
-      where: {
-        id,
-      },
-    });
+  async findById(id: number) {
+    const user = await this.UsersRepository.findBy({ id });
 
     if (!user) {
       throw new NotFoundException('User not found');

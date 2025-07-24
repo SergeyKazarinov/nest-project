@@ -22,12 +22,12 @@ export const ApiCreateOperation = (summary: string, responseType: Type) =>
     }),
   );
 
-export const ApiFindOperation = (summary: string, responseType: Type) =>
+export const ApiFindOperation = (summary: string, responseType: Type, isArray: boolean = false) =>
   applyDecorators(
     ApiOperation({ summary }),
     ApiOkResponse({
       description: 'Запрос выполнен успешно',
-      type: [responseType],
+      type: isArray ? [responseType] : responseType,
     }),
     ApiBadRequestResponse({
       description: 'Некорректные параметры запроса',
