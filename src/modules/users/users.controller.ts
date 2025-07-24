@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
+import { ApiFindOperation, ApiUpdateOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
 
-import { CreateUserDto } from './dto/create-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -13,16 +14,21 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение данных пользователя', GetUserDto)
   @UseGuards(JwtAuthGuard)
   @Get('me')
   findMe(@Req() req: RequestWithUser): GetUserDto {
-    const { password: _, ...user } = req.user;
-    return user;
+    return req.user;
   }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @ApiBearerAuth()
+  @ApiUpdateOperation('Обновление данных пользователя', GetUserDto)
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  async patchMe(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
+    const user = await this.usersService.update(req.user.id, updateUserDto);
+    return user;
   }
 
   @Get()

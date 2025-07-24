@@ -22,7 +22,6 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   @Length(2, 1500)
-  @Length(2, 1500)
   about: string;
 
   @ApiProperty({

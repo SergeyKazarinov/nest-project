@@ -1,8 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
+
+import { hashPassword } from '@/common/utils/service/hash-password';
 
 import { CreateUserDto } from './dto/create-user.dto';
+import { GetUserDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -38,16 +41,34 @@ export class UsersService {
     return user;
   }
 
-  async findByUsername(username: string) {
+  async findByUsername(username: string, options?: FindOneOptions<User>) {
     const user = await this.UsersRepository.findOne({
       where: { username },
+      ...options,
     });
     return user;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    console.log(updateUserDto);
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<GetUserDto> {
+    const user = await this.UsersRepository.findOne({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    const { password } = updateUserDto;
+
+    if (password) {
+      const hashedPassword = await hashPassword(password);
+      updateUserDto.password = hashedPassword;
+    }
+
+    await this.UsersRepository.update(id, updateUserDto);
+    const { password: _, ...updatedUser } = { ...user, ...updateUserDto };
+
+    return updatedUser;
   }
 
   remove(id: number) {
