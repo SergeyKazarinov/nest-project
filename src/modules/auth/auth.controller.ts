@@ -1,4 +1,5 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 
 import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
 import { UsersService } from '@/modules/users/users.service';
@@ -26,7 +27,12 @@ export class AuthController {
   @Post('signup')
   @ApiCreateOperation('Регистрация пользователя', CreateUserDto)
   async signup(@Body() createUserDto: CreateUserDto) {
-    const user = await this.usersService.create(createUserDto);
+    const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+
+    const user = await this.usersService.create({
+      ...createUserDto,
+      password: hashedPassword,
+    });
 
     return this.authService.login(user);
   }
