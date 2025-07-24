@@ -4,9 +4,10 @@ import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
 import { UsersService } from '@/modules/users/users.service';
 
-import { ApiCreateOperation } from '@/common/decorators/swagger';
+import { ApiCreateOperation, ApiLoginOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
 
+import { GetTokenDto } from './dto/get-token.dto';
 import { SigninUserDto } from './dto/signin-user.gto';
 import { LocalAuthGuard } from './guard/local-auth.guard';
 import { AuthService } from './auth.service';
@@ -20,6 +21,9 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('signin')
+  @ApiLoginOperation('Авторизация пользователя', {
+    type: GetTokenDto,
+  })
   login(@Req() req: RequestWithUser, @Body() _: SigninUserDto) {
     return this.authService.login(req.user);
   }
