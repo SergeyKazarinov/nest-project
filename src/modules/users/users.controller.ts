@@ -2,6 +2,8 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } fro
 
 import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
+import { RequestWithUser } from '@/common/types/request.types';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { GetUserDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -13,8 +15,9 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
-  findMe(@Req() _: Request & { user: GetUserDto }) {
-    return this.usersService.findOne(1);
+  findMe(@Req() req: RequestWithUser): GetUserDto {
+    const { password: _, ...user } = req.user;
+    return user;
   }
 
   @Post()
