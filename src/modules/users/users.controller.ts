@@ -6,6 +6,8 @@ import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 import { ApiFindOperation, ApiUpdateOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
 
+import { Wish } from '../wishes/entities/wish.entity';
+
 import { GetUserDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
@@ -29,6 +31,14 @@ export class UsersController {
   async patchMe(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
     const user = await this.usersService.update(req.user.id, updateUserDto);
     return user;
+  }
+
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение списка желаний пользователя', Wish)
+  @UseGuards(JwtAuthGuard)
+  @Get('me/wishes')
+  async getMyWishes(@Req() req: RequestWithUser) {
+    return this.usersService.getMyWishes(req.user.id);
   }
 
   @Get()

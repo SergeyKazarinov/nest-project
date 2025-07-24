@@ -71,6 +71,14 @@ export class UsersService {
     return updatedUser;
   }
 
+  async getMyWishes(id: number) {
+    const user = await this.UsersRepository.findOne({
+      where: { id },
+      relations: ['wishes'],
+    });
+    return user?.wishes ?? [];
+  }
+
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
