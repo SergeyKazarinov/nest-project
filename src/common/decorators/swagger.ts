@@ -1,5 +1,11 @@
 import { applyDecorators, Type } from '@nestjs/common';
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiResponseNoStatusOptions,
+} from '@nestjs/swagger';
 
 import { BadRequestErrorDto } from '../dto/error.dto';
 
@@ -16,12 +22,12 @@ export const ApiCreateOperation = (summary: string, responseType: Type) =>
     }),
   );
 
-export const ApiFindOperation = (summary: string, responseType: Type) =>
+export const ApiFindOperation = (summary: string, responseType: Type, isArray: boolean = false) =>
   applyDecorators(
     ApiOperation({ summary }),
     ApiOkResponse({
       description: 'Запрос выполнен успешно',
-      type: [responseType],
+      type: isArray ? [responseType] : responseType,
     }),
     ApiBadRequestResponse({
       description: 'Некорректные параметры запроса',
@@ -50,6 +56,23 @@ export const ApiDeleteOperation = (summary: string) =>
     }),
     ApiBadRequestResponse({
       description: 'Некорректные параметры запроса',
+      type: BadRequestErrorDto,
+    }),
+  );
+
+export const ApiLoginOperation = (summary: string, options: ApiResponseNoStatusOptions) =>
+  applyDecorators(
+    ApiOperation({ summary }),
+    ApiOkResponse({
+      description: 'Пользователь успешно авторизован',
+      example: {
+        access_token:
+          'eyJhbGciOisIUzI1NiIsInR5cCI6IkpXVCJ9.wyJzdWIiOjUsImlhdCI6MTc1MzM0MTQ4MH0.Ix-54mlAh1AxN7sNwXH7S9_fJ9HqMFqx-Qq8eAPy0DI',
+      },
+      ...options,
+    }),
+    ApiBadRequestResponse({
+      description: 'Некорректные данные',
       type: BadRequestErrorDto,
     }),
   );

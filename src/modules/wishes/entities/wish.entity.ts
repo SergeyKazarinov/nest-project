@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Length } from 'class-validator';
-import { Check, Column, Entity, ManyToOne } from 'typeorm';
+import { Check, Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
 import { Offer } from '@/modules/offers/entities/offer.entity';
 import { User } from '@/modules/users/entities/user.entity';
@@ -72,7 +72,7 @@ export class Wish extends BaseEntity {
   @Length(1, 1024)
   description: string;
 
-  @ManyToOne(() => Offer, (offer) => offer.item, {
+  @OneToMany(() => Offer, (offer) => offer.item, {
     cascade: true,
   })
   offers: Offer[];

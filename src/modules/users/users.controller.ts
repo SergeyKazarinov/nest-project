@@ -1,6 +1,13 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
-import { CreateUserDto } from './dto/create-user.dto';
+import { ApiDeleteOperation, ApiFindOperation, ApiUpdateOperation } from '@/common/decorators/swagger';
+import { RequestWithUser } from '@/common/types/request.types';
+
+import { Wish } from '../wishes/entities/wish.entity';
+
+import { FindUsersDto } from './dto/find-user.dtor';
+import { GetUserDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UsersService } from './users.service';
 
@@ -8,27 +15,53 @@ import { UsersService } from './users.service';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @Get('me')
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение данных пользователя', GetUserDto)
+  findMe(@Req() req: RequestWithUser): GetUserDto {
+    return req.user;
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
+  @Patch('me')
+  @ApiBearerAuth()
+  @ApiUpdateOperation('Обновление данных пользователя', GetUserDto)
+  async patchMe(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
+    const user = await this.usersService.update(req.user.id, updateUserDto);
+    return user;
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Get('me/wishes')
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение списка желаний пользователя', Wish)
+  async getMyWishes(@Req() req: RequestWithUser) {
+    return this.usersService.getUserWishes(req.user.username);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Get(':username/wishes')
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение списка желаний пользователя', Wish)
+  getUserWishes(@Param('username') username: string) {
+    return this.usersService.getUserWishes(username);
+  }
+
+  @Get(':username')
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение данных пользователя по username', GetUserDto)
+  findByUsername(@Param('username') username: string) {
+    return this.usersService.findByUsername(username);
+  }
+
+  @Post('find')
+  @ApiBearerAuth()
+  @ApiFindOperation('Поиск пользователей', GetUserDto, true)
+  @HttpCode(200)
+  findMany(@Body() { query }: FindUsersDto) {
+    return this.usersService.findMany(query);
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
+  @ApiDeleteOperation('Удаление пользователя')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);
   }
