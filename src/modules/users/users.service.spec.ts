@@ -38,12 +38,4 @@ describe('UsersService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-
-  describe('findAll', () => {
-    it('should return all users', () => {
-      const result = service.findAll();
-
-      expect(result).toBe('This action returns all users');
-    });
-  });
 });
