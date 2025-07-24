@@ -1,10 +1,10 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
 
-import { ApiCreateOperation } from '@/common/decorators/swagger';
+import { CreateUserDto } from '@/modules/users/dto/create-user.dto';
+import { UsersService } from '@/modules/users/users.service';
 
-import { CreateUserDto } from '../users/dto/create-user.dto';
-import { User } from '../users/entities/user.entity';
-import { UsersService } from '../users/users.service';
+import { ApiCreateOperation } from '@/common/decorators/swagger';
+import { RequestWithUser } from '@/common/types/request.types';
 
 import { SigninUserDto } from './dto/signin-user.gto';
 import { LocalAuthGuard } from './guard/local-auth.guard';
@@ -19,7 +19,7 @@ export class AuthController {
 
   @UseGuards(LocalAuthGuard)
   @Post('signin')
-  login(@Req() req: Request & { user: User }, @Body() _: SigninUserDto) {
+  login(@Req() req: RequestWithUser, @Body() _: SigninUserDto) {
     return this.authService.login(req.user);
   }
 
