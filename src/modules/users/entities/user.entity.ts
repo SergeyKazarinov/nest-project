@@ -12,7 +12,7 @@ import { BaseEntity } from '@/common/entities/base-entity.entity';
 export class User extends BaseEntity {
   @ApiProperty({
     description: 'Имя пользователя',
-    example: 'John Doe',
+    example: 'Username',
     minLength: 2,
     maxLength: 30,
   })

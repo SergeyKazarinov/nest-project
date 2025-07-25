@@ -2,6 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, ILike, Repository } from 'typeorm';
 
+import { Wish } from '@/modules/wishes/entities/wish.entity';
+
+import { ERROR_MESSAGES } from '@/common/consts/error';
+import { checkHasEntity } from '@/common/utils/service/check-has-entity';
 import { hashPassword } from '@/common/utils/service/hash-password';
 
 import { CreateUserDto } from './dto/create-user.dto';
@@ -30,17 +34,13 @@ export class UsersService {
   }
 
   async findById(id: number) {
-    const user = await this.UsersRepository.findBy({ id });
+    const user = await this.UsersRepository.findOne({ where: { id } });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user;
+    return checkHasEntity(user, ERROR_MESSAGES.USER_NOT_FOUND);
   }
 
   async findByUsername(username: string, options?: FindOneOptions<User>) {
-    const user = await this.UsersRepository.findOne({
+    const data = await this.UsersRepository.findOne({
       where: { username: ILike(username) },
       select: {
         id: true,
@@ -53,21 +53,15 @@ export class UsersService {
       ...options,
     });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user;
+    return checkHasEntity(data, ERROR_MESSAGES.USER_NOT_FOUND);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserProfileResponseDto> {
-    const user = await this.UsersRepository.findOne({
+    const userData = await this.UsersRepository.findOne({
       where: { id },
     });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    const user = checkHasEntity(userData, ERROR_MESSAGES.USER_NOT_FOUND);
 
     const { password } = updateUserDto;
 
@@ -82,9 +76,13 @@ export class UsersService {
     return updatedUser;
   }
 
-  async getMyWishes(id: number) {
+  async getWishes(id: number): Promise<Wish[]>;
+  async getWishes(username: string): Promise<Wish[]>;
+  async getWishes(idOrUsername: number | string): Promise<Wish[]> {
+    const where = typeof idOrUsername === 'number' ? { id: idOrUsername } : { username: idOrUsername };
+
     const user = await this.UsersRepository.findOne({
-      where: { id },
+      where,
       relations: {
         wishes: {
           offers: {
@@ -95,37 +93,13 @@ export class UsersService {
       },
     });
 
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user.wishes;
-  }
-
-  async getUserWishes(username: string) {
-    const user = await this.UsersRepository.findOne({
-      where: { username },
-      relations: {
-        wishes: {
-          offers: {
-            user: true,
-          },
-          owner: true,
-        },
-      },
-    });
-
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-
-    return user.wishes;
+    return checkHasEntity(user, ERROR_MESSAGES.USER_NOT_FOUND).wishes;
   }
 
   async remove(id: number) {
     const result = await this.UsersRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException('Пользователь не найден');
+      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
     }
     return {};
   }

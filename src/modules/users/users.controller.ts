@@ -38,7 +38,7 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiFindOperation('Получение списка желаний пользователя', Wish, true)
   async getMyWishes(@Req() req: RequestWithUser): Promise<Wish[]> {
-    const wishes = await this.usersService.getMyWishes(req.user.id);
+    const wishes = await this.usersService.getWishes(req.user.id);
     return wishes;
   }
 
@@ -47,7 +47,7 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiFindOperation('Получение списка желаний пользователя', Wish)
   getUserWishes(@Param('username') username: string): Promise<Wish[]> {
-    return this.usersService.getUserWishes(username);
+    return this.usersService.getWishes(username);
   }
 
   @Get(':username')
