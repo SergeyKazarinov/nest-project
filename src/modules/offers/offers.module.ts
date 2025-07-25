@@ -1,22 +1,15 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { JwtAuthGuard } from '../auth/guard/jwt-guard';
+import { Wish } from '@/modules/wishes/entities/wish.entity';
 
 import { Offer } from './entities/offer.entity';
 import { OffersController } from './offers.controller';
 import { OffersService } from './offers.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Offer])],
+  imports: [TypeOrmModule.forFeature([Offer, Wish])],
   controllers: [OffersController],
-  providers: [
-    OffersService,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
-  ],
+  providers: [OffersService],
 })
 export class OffersModule {}

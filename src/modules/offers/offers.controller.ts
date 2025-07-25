@@ -1,7 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
+
+import { ApiCreateOperation, ApiFindOperation } from '@/common/decorators/swagger';
+import { RequestWithUser } from '@/common/types/request.types';
 
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { UpdateOfferDto } from './dto/update-offer.dto';
+import { Offer } from './entities/offer.entity';
 import { OffersService } from './offers.service';
 
 @Controller('offers')
@@ -9,11 +16,17 @@ export class OffersController {
   constructor(private readonly offersService: OffersService) {}
 
   @Post()
-  create(@Body() createOfferDto: CreateOfferDto) {
-    return this.offersService.create(createOfferDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCreateOperation('Создание предложения', Offer)
+  create(@Req() req: RequestWithUser, @Body() createOfferDto: CreateOfferDto) {
+    return this.offersService.create(req.user, createOfferDto);
   }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение списка предложений', Offer)
   findAll() {
     return this.offersService.findAll();
   }
