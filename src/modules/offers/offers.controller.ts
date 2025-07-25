@@ -25,12 +25,15 @@ export class OffersController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiFindOperation('Получение списка предложений', Offer)
+  @ApiFindOperation('Получение списка предложений', Offer, true)
   findAll() {
     return this.offersService.findAll();
   }
 
   @Get(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение предложения', Offer)
   findOne(@Param('id') id: string) {
     return this.offersService.findOne(+id);
   }
