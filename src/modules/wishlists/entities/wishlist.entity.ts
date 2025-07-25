@@ -1,6 +1,7 @@
 import { IsNotEmpty, IsString, IsUrl, Length } from 'class-validator';
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, ManyToOne } from 'typeorm';
 
+import { User } from '@/modules/users/entities/user.entity';
 import { Wish } from '@/modules/wishes/entities/wish.entity';
 
 import { BaseEntity } from '@/common/entities/base-entity.entity';
@@ -27,6 +28,8 @@ export class Wishlist extends BaseEntity {
   image: string;
 
   @ManyToMany(() => Wish)
-  @JoinTable()
   items: Wish[];
+
+  @ManyToOne(() => User, (user) => user.wishlists)
+  owner: User;
 }

@@ -94,6 +94,6 @@ export class User extends BaseEntity {
     type: Wishlist,
     isArray: true,
   })
-  @OneToMany(() => Wishlist, (wishlist) => wishlist.id)
+  @OneToMany(() => Wishlist, (wishlist) => wishlist.owner)
   wishlists: Wishlist[];
 }

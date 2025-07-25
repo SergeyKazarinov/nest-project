@@ -42,6 +42,7 @@ export class UsersService {
   async findByUsername(username: string, options?: FindOneOptions<User>) {
     const user = await this.UsersRepository.findOne({
       where: { username },
+      relations: ['wishes', 'offers', 'wishlists'],
       ...options,
     });
     return user;
