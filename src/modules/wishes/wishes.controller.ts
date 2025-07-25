@@ -57,16 +57,16 @@ export class WishesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiUpdateOperation('Обновление подарка', GetWishDto)
-  update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.update(+id, updateWishDto);
+  update(@Req() req: RequestWithUser, @Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
+    return this.wishesService.update(req.user, +id, updateWishDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiDeleteOperation('Удаление подарка')
-  remove(@Param('id') id: string) {
-    return this.wishesService.remove(+id);
+  remove(@Req() req: RequestWithUser, @Param('id') id: string) {
+    return this.wishesService.remove(req.user, +id);
   }
 
   @Post(':id/copy')

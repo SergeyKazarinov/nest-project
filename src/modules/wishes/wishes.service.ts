@@ -1,9 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { PUBLIC_USER_PROFILE_SELECT } from '@/modules/users/const/orm';
 import { User } from '@/modules/users/entities/user.entity';
+
+import { checkForbidden } from '@/common/utils/service/check-forbidden';
+import { checkHasEntity } from '@/common/utils/service/check-has-entity';
 
 import { WISH_RELATIONS } from './const/orm';
 import { CreateWishDto } from './dto/create-wish.dto';
@@ -17,6 +20,14 @@ export class WishesService {
     private readonly wishRepository: Repository<Wish>,
   ) {}
 
+  async checkEditPermissions(user: User, id: Wish['id']) {
+    const wishData = await this.findOne(id);
+
+    const wish = checkHasEntity(wishData, 'Подарок не найден');
+
+    return checkForbidden(user, wish, wish.owner.id);
+  }
+
   async create(user: User, createWishDto: CreateWishDto) {
     const wish = this.wishRepository.create({
       ...createWishDto,
@@ -25,10 +36,7 @@ export class WishesService {
 
     await this.wishRepository.save(wish);
 
-    return this.wishRepository.findOne({
-      where: { id: wish.id },
-      relations: WISH_RELATIONS,
-    });
+    return this.findOne(wish.id);
   }
 
   async findLast() {
@@ -59,14 +67,16 @@ export class WishesService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: Wish['id']) {
     return await this.wishRepository.findOne({
       where: { id },
       relations: WISH_RELATIONS,
     });
   }
 
-  async update(id: number, updateWishDto: UpdateWishDto) {
+  async update(user: User, id: Wish['id'], updateWishDto: UpdateWishDto) {
+    await this.checkEditPermissions(user, id);
+
     await this.wishRepository.update(id, updateWishDto);
     return await this.wishRepository.findOne({
       where: { id },
@@ -74,23 +84,19 @@ export class WishesService {
     });
   }
 
-  async remove(id: number) {
-    const wish = await this.wishRepository.findOne({
-      where: { id },
-    });
+  async remove(user: User, id: Wish['id']) {
+    await this.checkEditPermissions(user, id);
 
     await this.wishRepository.delete(id);
-    return wish;
+    return;
   }
 
-  async copy(user: User, id: number) {
-    const wish = await this.wishRepository.findOne({
+  async copy(user: User, id: Wish['id']) {
+    const wishData = await this.wishRepository.findOne({
       where: { id },
     });
 
-    if (!wish) {
-      throw new NotFoundException('Подарок не найден');
-    }
+    const wish = checkHasEntity(wishData, 'Подарок не найден');
 
     const newWish = {
       ...wish,
