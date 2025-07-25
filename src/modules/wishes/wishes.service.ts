@@ -23,7 +23,7 @@ export class WishesService {
   async checkEditPermissions(user: User, id: Wish['id']) {
     const wishData = await this.findOne(id);
 
-    const wish = checkHasEntity(wishData, 'Подарок не найден');
+    const wish = checkHasEntity(wishData, 'WISH');
 
     return checkForbidden(user, wish, wish.owner.id);
   }
@@ -96,7 +96,7 @@ export class WishesService {
       where: { id },
     });
 
-    const wish = checkHasEntity(wishData, 'Подарок не найден');
+    const wish = checkHasEntity(wishData, 'WISH');
 
     const newWish = {
       ...wish,

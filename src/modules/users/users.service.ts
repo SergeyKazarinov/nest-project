@@ -27,7 +27,7 @@ export class UsersService {
     });
 
     if (userExists) {
-      throw new ConflictException(ERROR_MESSAGES.USER_ALREADY_EXISTS);
+      throw new ConflictException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
     }
 
     const user = this.UsersRepository.create(createUserDto);
@@ -54,7 +54,7 @@ export class UsersService {
     }
     const user = await this.UsersRepository.findOne({ ...options, ...opt });
 
-    return checkHasEntity(user, ERROR_MESSAGES.USER_NOT_FOUND);
+    return checkHasEntity(user, 'USER');
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserProfileResponseDto> {
@@ -90,13 +90,13 @@ export class UsersService {
       },
     });
 
-    return checkHasEntity(user, ERROR_MESSAGES.USER_NOT_FOUND).wishes;
+    return checkHasEntity(user, 'USER').wishes;
   }
 
   async remove(id: number) {
     const result = await this.UsersRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
+      throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
     }
     return {};
   }

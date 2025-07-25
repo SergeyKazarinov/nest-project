@@ -29,7 +29,11 @@ export class Offer extends BaseEntity {
     type: Number,
   })
   @Column({
-    type: 'money',
+    type: 'decimal',
+    precision: 10,
+    scale: 2,
+    nullable: false,
+    default: 0,
   })
   @IsNumber()
   @IsPrice()
