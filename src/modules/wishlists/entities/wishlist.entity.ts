@@ -30,6 +30,8 @@ export class Wishlist extends BaseEntity {
   @ManyToMany(() => Wish)
   items: Wish[];
 
-  @ManyToOne(() => User, (user) => user.wishlists)
+  @ManyToOne(() => User, (user) => user.wishlists, {
+    onDelete: 'CASCADE',
+  })
   owner: User;
 }
