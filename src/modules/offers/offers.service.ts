@@ -6,7 +6,6 @@ import { User } from '@/modules/users/entities/user.entity';
 import { Wish } from '@/modules/wishes/entities/wish.entity';
 
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { UpdateOfferDto } from './dto/update-offer.dto';
 import { Offer } from './entities/offer.entity';
 
 @Injectable()
@@ -46,16 +45,14 @@ export class OffersService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} offer`;
-  }
-
-  update(id: number, updateOfferDto: UpdateOfferDto) {
-    console.log(updateOfferDto);
-    return `This action updates a #${id} offer`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} offer`;
+  async findOne(id: number) {
+    const offer = await this.offersRepository.findOne({
+      where: { id },
+      relations: ['user', 'item'],
+    });
+    if (!offer) {
+      throw new NotFoundException(`Предложение с ID ${id} не найдено`);
+    }
+    return offer;
   }
 }
