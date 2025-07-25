@@ -5,7 +5,7 @@ import { FindOneOptions, ILike, Repository } from 'typeorm';
 import { hashPassword } from '@/common/utils/service/hash-password';
 
 import { CreateUserDto } from './dto/create-user.dto';
-import { GetUserDto } from './dto/get-user.dto';
+import { UserProfileResponseDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -42,13 +42,25 @@ export class UsersService {
   async findByUsername(username: string, options?: FindOneOptions<User>) {
     const user = await this.UsersRepository.findOne({
       where: { username: ILike(username) },
-      relations: ['wishes', 'offers', 'wishlists'],
+      select: {
+        id: true,
+        createdAt: true,
+        updatedAt: true,
+        username: true,
+        avatar: true,
+        about: true,
+      },
       ...options,
     });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
     return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<GetUserDto> {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserProfileResponseDto> {
     const user = await this.UsersRepository.findOne({
       where: { id },
     });
@@ -70,12 +82,44 @@ export class UsersService {
     return updatedUser;
   }
 
+  async getMyWishes(id: number) {
+    const user = await this.UsersRepository.findOne({
+      where: { id },
+      relations: {
+        wishes: {
+          offers: {
+            user: true,
+          },
+          owner: true,
+        },
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user.wishes;
+  }
+
   async getUserWishes(username: string) {
     const user = await this.UsersRepository.findOne({
       where: { username },
-      relations: ['wishes'],
+      relations: {
+        wishes: {
+          offers: {
+            user: true,
+          },
+          owner: true,
+        },
+      },
     });
-    return user?.wishes ?? [];
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    return user.wishes;
   }
 
   async remove(id: number) {

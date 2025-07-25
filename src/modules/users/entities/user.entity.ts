@@ -78,7 +78,9 @@ export class User extends BaseEntity {
     type: Wish,
     isArray: true,
   })
-  @OneToMany(() => Wish, (wish) => wish.owner)
+  @OneToMany(() => Wish, (wish) => wish.owner, {
+    cascade: true,
+  })
   wishes: Wish[];
 
   @ApiProperty({
