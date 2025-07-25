@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Length } from 'class-validator';
 import { Check, Column, Entity, ManyToOne, OneToMany } from 'typeorm';
 
@@ -16,6 +17,11 @@ import { IsPrice } from '@/common/utils/validation/is-price';
 @Check('CHK_WISH_LINK_URL', "link LIKE 'http%'")
 @Check('CHK_WISH_IMAGE_URL', "image LIKE 'http%'")
 export class Wish extends BaseEntity {
+  @ApiProperty({
+    description: 'Название подарка',
+    type: String,
+    example: 'Новый телефон',
+  })
   @Column({
     length: 250,
     nullable: false,
@@ -25,18 +31,33 @@ export class Wish extends BaseEntity {
   @Length(1, 250)
   name: string;
 
+  @ApiProperty({
+    description: 'Ссылка на подарок',
+    type: String,
+    example: 'https://www.google.com',
+  })
   @Column({
     nullable: false,
   })
   @IsUrl()
   link: string;
 
+  @ApiProperty({
+    description: 'Ссылка на изображение подарка',
+    type: String,
+    example: 'https://www.google.com',
+  })
   @Column({
     nullable: false,
   })
   @IsUrl()
   image: string;
 
+  @ApiProperty({
+    description: 'Цена подарка',
+    type: Number,
+    example: 1000.15,
+  })
   @Column({
     type: 'decimal',
     precision: 10,
@@ -48,6 +69,11 @@ export class Wish extends BaseEntity {
   @IsPrice()
   price: number;
 
+  @ApiProperty({
+    description: 'Сумма, на которую уже собрано средств',
+    type: Number,
+    example: 1000.15,
+  })
   @Column({
     type: 'decimal',
     precision: 10,
@@ -59,11 +85,20 @@ export class Wish extends BaseEntity {
   @IsPrice()
   raised: number;
 
+  @ApiProperty({
+    description: 'Владелец подарка',
+    type: () => User,
+  })
   @ManyToOne(() => User, (user) => user.wishes, {
     onDelete: 'CASCADE',
   })
   owner: User;
 
+  @ApiProperty({
+    description: 'Описание подарка',
+    type: String,
+    example: 'Новый телефон',
+  })
   @Column({
     length: 1024,
     nullable: false,
@@ -77,6 +112,11 @@ export class Wish extends BaseEntity {
   })
   offers: Offer[];
 
+  @ApiProperty({
+    description: 'Количество копий подарка',
+    type: Number,
+    example: 0,
+  })
   @Column({
     type: 'integer',
     default: 0,

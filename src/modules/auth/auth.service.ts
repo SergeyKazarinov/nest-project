@@ -14,7 +14,7 @@ export class AuthService {
   ) {}
 
   async validateUser(username: User['username'], password: User['password']) {
-    const user = await this.usersService.findByUsername(username, {
+    const user = await this.usersService.findUser(username, {
       select: {
         id: true,
         username: true,
@@ -24,9 +24,6 @@ export class AuthService {
         createdAt: true,
         updatedAt: true,
         password: true,
-        offers: true,
-        wishes: true,
-        wishlists: true,
       },
     });
 

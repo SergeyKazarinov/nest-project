@@ -12,13 +12,15 @@ import { BaseEntity } from '@/common/entities/base-entity.entity';
 export class User extends BaseEntity {
   @ApiProperty({
     description: 'Имя пользователя',
-    example: 'John Doe',
+    example: 'Username',
     minLength: 2,
     maxLength: 30,
+    uniqueItems: true,
   })
   @Column({
     length: 30,
     nullable: false,
+    unique: true,
   })
   @Length(2, 30)
   @IsNotEmpty()
@@ -52,6 +54,7 @@ export class User extends BaseEntity {
   @ApiProperty({
     description: 'Email пользователя',
     example: 'john.doe@example.com',
+    uniqueItems: true,
   })
   @IsEmail()
   @IsNotEmpty()
@@ -78,7 +81,9 @@ export class User extends BaseEntity {
     type: Wish,
     isArray: true,
   })
-  @OneToMany(() => Wish, (wish) => wish.owner)
+  @OneToMany(() => Wish, (wish) => wish.owner, {
+    cascade: true,
+  })
   wishes: Wish[];
 
   @ApiProperty({
