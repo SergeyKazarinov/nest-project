@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
@@ -9,6 +9,7 @@ import {
   ApiFindOperation,
   ApiUpdateOperation,
 } from '@/common/decorators/swagger';
+import { RequestWithUser } from '@/common/types/request.types';
 
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
@@ -23,8 +24,8 @@ export class WishesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreateOperation('Создание подарка', Wish)
-  create(@Body() createWishDto: CreateWishDto) {
-    return this.wishesService.create(createWishDto);
+  create(@Req() req: RequestWithUser, @Body() createWishDto: CreateWishDto) {
+    return this.wishesService.create(req.user, createWishDto);
   }
 
   @Get('/last')
@@ -71,7 +72,7 @@ export class WishesController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreateOperation('Копирование подарка', Wish)
-  copy(@Param('id') id: string) {
-    return this.wishesService.copy(+id);
+  copy(@Req() req: RequestWithUser, @Param('id') id: string) {
+    return this.wishesService.copy(req.user, +id);
   }
 }
