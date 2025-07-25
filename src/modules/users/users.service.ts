@@ -41,35 +41,30 @@ export class UsersService {
     return users;
   }
 
-  async findById(id: number) {
-    const user = await this.UsersRepository.findOne({ where: { id } });
+  async findUser(id: number, opt?: FindOneOptions<User>): Promise<User>;
+  async findUser(username: string, opt?: FindOneOptions<User>): Promise<User>;
+  async findUser(idOrUsername: number | string, opt?: FindOneOptions<User>): Promise<User> {
+    const where = typeof idOrUsername === 'number' ? { id: idOrUsername } : { username: ILike(idOrUsername) };
 
-    return checkHasEntity(user, ERROR_MESSAGES.USER_NOT_FOUND);
-  }
+    const options: FindOneOptions<User> = { where };
 
-  async findByUsername(username: string, options?: FindOneOptions<User>) {
-    const data = await this.UsersRepository.findOne({
-      where: { username: ILike(username) },
-      select: {
+    if (typeof idOrUsername === 'string') {
+      options.select = {
         id: true,
         createdAt: true,
         updatedAt: true,
         username: true,
         avatar: true,
         about: true,
-      },
-      ...options,
-    });
+      };
+    }
+    const user = await this.UsersRepository.findOne({ ...options, ...opt });
 
-    return checkHasEntity(data, ERROR_MESSAGES.USER_NOT_FOUND);
+    return checkHasEntity(user, ERROR_MESSAGES.USER_NOT_FOUND);
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserProfileResponseDto> {
-    const userData = await this.UsersRepository.findOne({
-      where: { id },
-    });
-
-    const user = checkHasEntity(userData, ERROR_MESSAGES.USER_NOT_FOUND);
+    const user = await this.findUser(id);
 
     const { password } = updateUserDto;
 

@@ -55,7 +55,7 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiFindOperation('Получение данных пользователя по username', UserPublicProfileResponseDto)
   findByUsername(@Param('username') username: string): Promise<UserPublicProfileResponseDto> {
-    return this.usersService.findByUsername(username);
+    return this.usersService.findUser(username);
   }
 
   @Post('find')
