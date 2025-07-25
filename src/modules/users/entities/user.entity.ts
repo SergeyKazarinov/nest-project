@@ -15,10 +15,12 @@ export class User extends BaseEntity {
     example: 'Username',
     minLength: 2,
     maxLength: 30,
+    uniqueItems: true,
   })
   @Column({
     length: 30,
     nullable: false,
+    unique: true,
   })
   @Length(2, 30)
   @IsNotEmpty()
@@ -52,6 +54,7 @@ export class User extends BaseEntity {
   @ApiProperty({
     description: 'Email пользователя',
     example: 'john.doe@example.com',
+    uniqueItems: true,
   })
   @IsEmail()
   @IsNotEmpty()
