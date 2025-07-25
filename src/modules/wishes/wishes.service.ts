@@ -2,8 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { PUBLIC_USER_PROFILE_SELECT } from '@/modules/users/const/orm';
 import { User } from '@/modules/users/entities/user.entity';
 
+import { WISH_RELATIONS } from './const/orm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
@@ -25,34 +27,42 @@ export class WishesService {
 
     return this.wishRepository.findOne({
       where: { id: wish.id },
-      relations: ['owner', 'offers'],
+      relations: WISH_RELATIONS,
     });
   }
 
   async findLast() {
     return await this.wishRepository.find({
-      relations: ['owner', 'offers'],
+      relations: WISH_RELATIONS,
+      select: {
+        owner: PUBLIC_USER_PROFILE_SELECT,
+      },
       order: {
         createdAt: 'DESC',
       },
       take: 40,
+      skip: 0,
     });
   }
 
   async findTop() {
     return await this.wishRepository.find({
-      relations: ['owner', 'offers'],
+      relations: WISH_RELATIONS,
+      select: {
+        owner: PUBLIC_USER_PROFILE_SELECT,
+      },
       order: {
         copied: 'DESC',
       },
       take: 20,
+      skip: 0,
     });
   }
 
   async findOne(id: number) {
     return await this.wishRepository.findOne({
       where: { id },
-      relations: ['owner', 'offers'],
+      relations: WISH_RELATIONS,
     });
   }
 
@@ -60,7 +70,7 @@ export class WishesService {
     await this.wishRepository.update(id, updateWishDto);
     return await this.wishRepository.findOne({
       where: { id },
-      relations: ['owner', 'offers'],
+      relations: WISH_RELATIONS,
     });
   }
 

@@ -12,6 +12,7 @@ import {
 import { RequestWithUser } from '@/common/types/request.types';
 
 import { CreateWishDto } from './dto/create-wish.dto';
+import { GetWishDto } from './dto/get-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
 import { WishesService } from './wishes.service';
@@ -23,7 +24,7 @@ export class WishesController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreateOperation('Создание подарка', Wish)
+  @ApiCreateOperation('Создание подарка', GetWishDto)
   create(@Req() req: RequestWithUser, @Body() createWishDto: CreateWishDto) {
     return this.wishesService.create(req.user, createWishDto);
   }
@@ -31,7 +32,7 @@ export class WishesController {
   @Get('/last')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiFindOperation('Получение списка последних подарков', Wish)
+  @ApiFindOperation('Получение списка последних подарков', GetWishDto, true)
   findLast() {
     return this.wishesService.findLast();
   }
@@ -39,7 +40,7 @@ export class WishesController {
   @Get('/top')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiFindOperation('Получение списка популярных подарков', Wish)
+  @ApiFindOperation('Получение списка популярных подарков', GetWishDto, true)
   findTop() {
     return this.wishesService.findTop();
   }
@@ -47,7 +48,7 @@ export class WishesController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiFindOperation('Получение подарка по id', Wish)
+  @ApiFindOperation('Получение подарка по id', GetWishDto)
   findOne(@Param('id') id: string) {
     return this.wishesService.findOne(+id);
   }
@@ -55,7 +56,7 @@ export class WishesController {
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiUpdateOperation('Обновление подарка', Wish)
+  @ApiUpdateOperation('Обновление подарка', GetWishDto)
   update(@Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
     return this.wishesService.update(+id, updateWishDto);
   }
