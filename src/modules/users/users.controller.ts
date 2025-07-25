@@ -1,10 +1,11 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
+import { Wish } from '@/modules/wishes/entities/wish.entity';
 
 import { ApiDeleteOperation, ApiFindOperation, ApiUpdateOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
-
-import { Wish } from '../wishes/entities/wish.entity';
 
 import { FindUsersDto } from './dto/find-user.dtor';
 import { GetUserDto } from './dto/get-user.dto';
@@ -16,6 +17,7 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get('me')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiFindOperation('Получение данных пользователя', GetUserDto)
   findMe(@Req() req: RequestWithUser): GetUserDto {
@@ -23,6 +25,7 @@ export class UsersController {
   }
 
   @Patch('me')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiUpdateOperation('Обновление данных пользователя', GetUserDto)
   async patchMe(@Req() req: RequestWithUser, @Body() updateUserDto: UpdateUserDto) {
@@ -31,6 +34,7 @@ export class UsersController {
   }
 
   @Get('me/wishes')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiFindOperation('Получение списка желаний пользователя', Wish)
   async getMyWishes(@Req() req: RequestWithUser) {
@@ -38,6 +42,7 @@ export class UsersController {
   }
 
   @Get(':username/wishes')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiFindOperation('Получение списка желаний пользователя', Wish)
   getUserWishes(@Param('username') username: string) {
@@ -45,6 +50,7 @@ export class UsersController {
   }
 
   @Get(':username')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiFindOperation('Получение данных пользователя по username', GetUserDto)
   findByUsername(@Param('username') username: string) {
@@ -52,6 +58,7 @@ export class UsersController {
   }
 
   @Post('find')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiFindOperation('Поиск пользователей', GetUserDto, true)
   @HttpCode(200)
@@ -60,6 +67,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiDeleteOperation('Удаление пользователя')
   remove(@Param('id') id: string) {

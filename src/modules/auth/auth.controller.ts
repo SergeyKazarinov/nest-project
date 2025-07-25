@@ -19,8 +19,8 @@ export class AuthController {
     private readonly usersService: UsersService,
   ) {}
 
-  @UseGuards(LocalAuthGuard)
   @Post('signin')
+  @UseGuards(LocalAuthGuard)
   @ApiLoginOperation('Авторизация пользователя', {
     type: GetTokenDto,
   })

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator';
 import { Column, Entity, ManyToOne } from 'typeorm';
 
@@ -9,12 +10,24 @@ import { IsPrice } from '@/common/utils/validation/is-price';
 
 @Entity()
 export class Offer extends BaseEntity {
+  @ApiProperty({
+    description: 'Пользователь, который сделал предложение',
+    type: () => User,
+  })
   @ManyToOne(() => User, (user) => user.offers)
   user: User;
 
+  @ApiProperty({
+    description: 'Подарок, на который сделано предложение',
+    type: () => Wish,
+  })
   @ManyToOne(() => Wish, (wish) => wish.offers)
   item: Wish;
 
+  @ApiProperty({
+    description: 'Сумма предложения',
+    type: Number,
+  })
   @Column({
     type: 'money',
   })
@@ -22,6 +35,10 @@ export class Offer extends BaseEntity {
   @IsPrice()
   amount: number;
 
+  @ApiProperty({
+    description: 'Скрыто ли предложение',
+    type: Boolean,
+  })
   @Column({
     type: 'boolean',
   })

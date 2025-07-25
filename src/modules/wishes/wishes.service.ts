@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+import { User } from '@/modules/users/entities/user.entity';
+
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
@@ -13,9 +15,18 @@ export class WishesService {
     private readonly wishRepository: Repository<Wish>,
   ) {}
 
-  async create(createWishDto: CreateWishDto) {
-    await this.wishRepository.save(createWishDto);
-    return {};
+  async create(user: User, createWishDto: CreateWishDto) {
+    const wish = this.wishRepository.create({
+      ...createWishDto,
+      owner: user,
+    });
+
+    await this.wishRepository.save(wish);
+
+    return this.wishRepository.findOne({
+      where: { id: wish.id },
+      relations: ['owner', 'offers'],
+    });
   }
 
   async findLast() {
@@ -62,7 +73,7 @@ export class WishesService {
     return wish;
   }
 
-  async copy(id: number) {
+  async copy(user: User, id: number) {
     const wish = await this.wishRepository.findOne({
       where: { id },
     });
@@ -77,7 +88,7 @@ export class WishesService {
       id: undefined,
     };
 
-    await this.create(newWish);
+    await this.create(user, newWish);
     await this.wishRepository.increment({ id }, 'copied', 1);
 
     return newWish;
