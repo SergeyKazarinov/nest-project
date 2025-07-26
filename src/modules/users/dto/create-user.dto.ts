@@ -1,50 +1,27 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, IsString, IsUrl, Length } from 'class-validator';
+import { ApiProperty, PickType } from '@nestjs/swagger';
+import { IsOptional, IsString, IsUrl, Length } from 'class-validator';
 
-export class CreateUserDto {
-  @ApiProperty({
-    description: 'Имя пользователя',
-    example: 'John Doe',
-    minLength: 1,
-    maxLength: 30,
-  })
-  @IsNotEmpty()
-  @IsString()
-  @Length(1, 30)
-  username: string;
+import { User } from '../entities/user.entity';
 
+export class CreateUserDto extends PickType(User, ['username', 'email', 'password']) {
   @ApiProperty({
     description: 'Описание пользователя',
     example: 'John Doe',
     minLength: 2,
     maxLength: 1500,
+    required: false,
   })
-  @IsNotEmpty()
   @IsString()
   @Length(2, 1500)
   @IsOptional()
-  about?: string;
+  about?: User['about'];
 
   @ApiProperty({
     description: 'Аватар пользователя',
     example: 'https://i.pravatar.cc/300',
+    required: false,
   })
   @IsUrl()
-  avatar: string;
-
-  @ApiProperty({
-    description: 'Email пользователя',
-    example: 'john.doe@example.com',
-  })
-  @IsEmail()
-  @IsNotEmpty()
-  email: string;
-
-  @ApiProperty({
-    description: 'Пароль пользователя',
-    example: 'password',
-  })
-  @IsNotEmpty()
-  @IsString()
-  password: string;
+  @IsOptional()
+  avatar?: User['avatar'];
 }
