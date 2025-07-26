@@ -8,6 +8,7 @@ import { ERROR_MESSAGES } from '@/common/consts/error';
 import { checkHasEntity } from '@/common/utils/service/check-has-entity';
 import { hashPassword } from '@/common/utils/service/hash-password';
 
+import { PUBLIC_USER_PROFILE_SELECT } from './const/orm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserProfileResponseDto } from './dto/get-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -26,7 +27,7 @@ export class UsersService {
     });
 
     if (userExists) {
-      throw new ConflictException(ERROR_MESSAGES.USER_ALREADY_EXISTS);
+      throw new ConflictException(ERROR_MESSAGES.USER.ALREADY_EXISTS);
     }
 
     const user = this.UsersRepository.create(createUserDto);
@@ -49,18 +50,11 @@ export class UsersService {
     const options: FindOneOptions<User> = { where };
 
     if (typeof idOrUsername === 'string') {
-      options.select = {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        username: true,
-        avatar: true,
-        about: true,
-      };
+      options.select = PUBLIC_USER_PROFILE_SELECT;
     }
     const user = await this.UsersRepository.findOne({ ...options, ...opt });
 
-    return checkHasEntity(user, ERROR_MESSAGES.USER_NOT_FOUND);
+    return checkHasEntity(user, 'USER');
   }
 
   async update(id: number, updateUserDto: UpdateUserDto): Promise<UserProfileResponseDto> {
@@ -96,13 +90,13 @@ export class UsersService {
       },
     });
 
-    return checkHasEntity(user, ERROR_MESSAGES.USER_NOT_FOUND).wishes;
+    return checkHasEntity(user, 'USER').wishes;
   }
 
   async remove(id: number) {
     const result = await this.UsersRepository.delete(id);
     if (result.affected === 0) {
-      throw new NotFoundException(ERROR_MESSAGES.USER_NOT_FOUND);
+      throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
     }
     return {};
   }
