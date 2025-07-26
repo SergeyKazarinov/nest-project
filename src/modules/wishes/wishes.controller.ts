@@ -14,7 +14,6 @@ import { RequestWithUser } from '@/common/types/request.types';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { GetWishDto } from './dto/get-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
-import { Wish } from './entities/wish.entity';
 import { WishesService } from './wishes.service';
 
 @Controller('wishes')
@@ -72,7 +71,7 @@ export class WishesController {
   @Post(':id/copy')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreateOperation('Копирование подарка', Wish)
+  @ApiCreateOperation('Копирование подарка', GetWishDto)
   copy(@Req() req: RequestWithUser, @Param('id') id: string) {
     return this.wishesService.copy(req.user, +id);
   }

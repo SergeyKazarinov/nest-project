@@ -1,24 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
-import { PUBLIC_USER_PROFILE_SELECT } from '@/modules/users/const/orm';
 import { User } from '@/modules/users/entities/user.entity';
 
 import { checkForbidden } from '@/common/utils/service/check-forbidden';
 import { checkHasEntity } from '@/common/utils/service/check-has-entity';
+import { TransactionService } from '@/common/utils/service/transaction';
 
-import { WISH_RELATIONS } from './const/orm';
+import { GET_WISH_DTO_ORM_OPTIONS } from './const/orm';
 import { CreateWishDto } from './dto/create-wish.dto';
 import { UpdateWishDto } from './dto/update-wish.dto';
 import { Wish } from './entities/wish.entity';
 
 @Injectable()
 export class WishesService {
+  private readonly transactionService: TransactionService;
+
   constructor(
+    private dataSource: DataSource,
     @InjectRepository(Wish)
     private readonly wishRepository: Repository<Wish>,
-  ) {}
+  ) {
+    this.transactionService = new TransactionService(dataSource);
+  }
 
   async checkEditPermissions(user: User, id: Wish['id']) {
     const wishData = await this.findOne(id);
@@ -41,10 +46,7 @@ export class WishesService {
 
   async findLast() {
     return await this.wishRepository.find({
-      relations: WISH_RELATIONS,
-      select: {
-        owner: PUBLIC_USER_PROFILE_SELECT,
-      },
+      ...GET_WISH_DTO_ORM_OPTIONS,
       order: {
         createdAt: 'DESC',
       },
@@ -55,10 +57,7 @@ export class WishesService {
 
   async findTop() {
     return await this.wishRepository.find({
-      relations: WISH_RELATIONS,
-      select: {
-        owner: PUBLIC_USER_PROFILE_SELECT,
-      },
+      ...GET_WISH_DTO_ORM_OPTIONS,
       order: {
         copied: 'DESC',
       },
@@ -68,10 +67,12 @@ export class WishesService {
   }
 
   async findOne(id: Wish['id']) {
-    return await this.wishRepository.findOne({
+    const wish = await this.wishRepository.findOne({
       where: { id },
-      relations: WISH_RELATIONS,
+      ...GET_WISH_DTO_ORM_OPTIONS,
     });
+
+    return checkHasEntity(wish, 'WISH');
   }
 
   async update(user: User, id: Wish['id'], updateWishDto: UpdateWishDto) {
@@ -80,7 +81,7 @@ export class WishesService {
     await this.wishRepository.update(id, updateWishDto);
     return await this.wishRepository.findOne({
       where: { id },
-      relations: WISH_RELATIONS,
+      ...GET_WISH_DTO_ORM_OPTIONS,
     });
   }
 
@@ -92,21 +93,33 @@ export class WishesService {
   }
 
   async copy(user: User, id: Wish['id']) {
-    const wishData = await this.wishRepository.findOne({
-      where: { id },
+    const result = await this.transactionService.run<Wish>(async (manager) => {
+      const wishData = await manager.findOne(Wish, {
+        where: { id },
+      });
+
+      const wish = checkHasEntity(wishData, 'WISH');
+
+      const newWish: Wish = {
+        ...wish,
+        id: 0,
+        copied: 0,
+        owner: user,
+      };
+
+      const createdWish = manager.create(Wish, newWish);
+
+      await manager.save(createdWish);
+      await manager.increment(Wish, { id }, 'copied', 1);
+
+      const foundWish = await manager.findOne(Wish, {
+        where: { id: createdWish.id },
+        ...GET_WISH_DTO_ORM_OPTIONS,
+      });
+
+      return checkHasEntity(foundWish, 'WISH');
     });
 
-    const wish = checkHasEntity(wishData, 'WISH');
-
-    const newWish = {
-      ...wish,
-      copied: 0,
-      id: undefined,
-    };
-
-    await this.create(user, newWish);
-    await this.wishRepository.increment({ id }, 'copied', 1);
-
-    return newWish;
+    return result;
   }
 }
