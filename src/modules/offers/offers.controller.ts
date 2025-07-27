@@ -7,7 +7,7 @@ import { ApiCreateOperation, ApiFindOperation } from '@/common/decorators/swagge
 import { RequestWithUser } from '@/common/types/request.types';
 
 import { CreateOfferDto } from './dto/create-offer.dto';
-import { Offer } from './entities/offer.entity';
+import { GetOfferDto } from './dto/get-offer.dto';
 import { OffersService } from './offers.service';
 
 @Controller('offers')
@@ -17,7 +17,7 @@ export class OffersController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreateOperation('Создание предложения', Offer)
+  @ApiCreateOperation('Создание предложения', GetOfferDto)
   create(@Req() req: RequestWithUser, @Body() createOfferDto: CreateOfferDto) {
     return this.offersService.create(req.user, createOfferDto);
   }
@@ -25,7 +25,7 @@ export class OffersController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiFindOperation('Получение списка предложений', Offer, true)
+  @ApiFindOperation('Получение списка предложений', GetOfferDto, true)
   findAll() {
     return this.offersService.findAll();
   }
@@ -33,7 +33,7 @@ export class OffersController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiFindOperation('Получение предложения', Offer)
+  @ApiFindOperation('Получение предложения', GetOfferDto)
   findOne(@Param('id') id: string) {
     return this.offersService.findOne(+id);
   }

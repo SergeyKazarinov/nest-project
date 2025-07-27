@@ -1,23 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 
-export class CreateOfferDto {
-  @ApiProperty({
-    description: 'Сумма покупки',
-    example: 1,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  amount: number;
+import { BaseOfferDto } from './base-offer.dto';
 
-  @ApiProperty({
-    description: 'Скрыть предложение',
-    example: true,
-  })
-  @IsBoolean()
-  @IsNotEmpty()
-  hidden: boolean;
-
+export class CreateOfferDto extends BaseOfferDto {
   @ApiProperty({
     description: 'ID подарка',
     example: 1,
