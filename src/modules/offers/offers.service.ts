@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
@@ -87,9 +87,7 @@ export class OffersService {
       where: { id },
       relations: ['user', 'item'],
     });
-    if (!offer) {
-      throw new NotFoundException(`Предложение с ID ${id} не найдено`);
-    }
-    return offer;
+
+    return checkHasEntity(offer, 'OFFER');
   }
 }

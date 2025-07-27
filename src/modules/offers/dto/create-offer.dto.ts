@@ -5,7 +5,7 @@ import { BaseOfferDto } from './base-offer.dto';
 
 export class CreateOfferDto extends BaseOfferDto {
   @ApiProperty({
-    description: 'ID подарка',
+    description: 'Id подарка',
     example: 1,
   })
   @IsNumber()

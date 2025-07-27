@@ -25,7 +25,7 @@ export class OffersController {
   @Get()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiFindOperation('Получение списка предложений', GetOfferDto, true)
+  @ApiFindOperation('Получение списка заявок', GetOfferDto, true)
   findAll() {
     return this.offersService.findAll();
   }
@@ -33,7 +33,7 @@ export class OffersController {
   @Get(':id')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiFindOperation('Получение предложения', GetOfferDto)
+  @ApiFindOperation('Получение заявки', GetOfferDto)
   findOne(@Param('id') id: string) {
     return this.offersService.findOne(+id);
   }

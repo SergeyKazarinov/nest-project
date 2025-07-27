@@ -7,14 +7,14 @@ import { Offer } from '../entities/offer.entity';
 
 export class GetOfferDto extends PartialType(OmitType(Offer, ['user', 'item'])) {
   @ApiProperty({
-    description: 'Пользователь, который сделал предложение',
+    description: 'Пользователь, который сделал заявку',
     type: PartialType(UserPublicProfileResponseDto),
     required: false,
   })
   user: UserPublicProfileResponseDto;
 
   @ApiProperty({
-    description: 'Подарок, на который сделано предложение',
+    description: 'Подарок, на который сделана заявка',
     required: false,
     type: () => GetWishDto,
   })
