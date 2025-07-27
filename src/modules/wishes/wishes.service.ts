@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
 import { User } from '@/modules/users/entities/user.entity';
 
+import { ERROR_MESSAGES } from '@/common/consts/error';
 import { checkForbidden } from '@/common/utils/service/check-forbidden';
 import { checkHasEntity } from '@/common/utils/service/check-has-entity';
 import { TransactionService } from '@/common/utils/service/transaction';
@@ -77,6 +78,12 @@ export class WishesService {
 
   async update(user: User, id: Wish['id'], updateWishDto: UpdateWishDto) {
     await this.checkEditPermissions(user, id);
+
+    const foundWish = await this.findOne(id);
+
+    if ((foundWish.offers.length > 0 || foundWish.raised > 0) && updateWishDto.price) {
+      throw new BadRequestException(ERROR_MESSAGES.WISH.PRICE_CANNOT_BE_CHANGED);
+    }
 
     await this.wishRepository.update(id, updateWishDto);
     return await this.wishRepository.findOne({

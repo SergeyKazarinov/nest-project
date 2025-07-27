@@ -11,21 +11,21 @@ import { IsPrice } from '@/common/utils/validation/is-price';
 @Entity()
 export class Offer extends BaseEntity {
   @ApiProperty({
-    description: 'Пользователь, который сделал предложение',
+    description: 'Пользователь, который оставил заявку',
     type: () => User,
   })
   @ManyToOne(() => User, (user) => user.offers)
   user: User;
 
   @ApiProperty({
-    description: 'Подарок, на который сделано предложение',
+    description: 'Подарок, на который оставили заявку',
     type: () => Wish,
   })
   @ManyToOne(() => Wish, (wish) => wish.offers)
   item: Wish;
 
   @ApiProperty({
-    description: 'Сумма предложения',
+    description: 'Собрано средств',
     type: Number,
   })
   @Column({
@@ -33,14 +33,14 @@ export class Offer extends BaseEntity {
     precision: 10,
     scale: 2,
     nullable: false,
-    default: 0,
+    default: 1,
   })
   @IsNumber()
   @IsPrice()
   amount: number;
 
   @ApiProperty({
-    description: 'Скрыто ли предложение',
+    description: 'Скрыты ли подробности заявки',
     type: Boolean,
   })
   @Column({
