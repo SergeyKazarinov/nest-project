@@ -33,7 +33,7 @@ export class Offer extends BaseEntity {
     precision: 10,
     scale: 2,
     nullable: false,
-    default: 0,
+    default: 1,
   })
   @IsNumber()
   @IsPrice()

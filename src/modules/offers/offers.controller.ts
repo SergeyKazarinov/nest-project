@@ -17,7 +17,7 @@ export class OffersController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
-  @ApiCreateOperation('Создание предложения', GetOfferDto)
+  @ApiCreateOperation('Создание заявки', GetOfferDto)
   create(@Req() req: RequestWithUser, @Body() createOfferDto: CreateOfferDto) {
     return this.offersService.create(req.user, createOfferDto);
   }
