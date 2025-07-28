@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
-import { ApiCreateOperation } from '@/common/decorators/swagger';
-import { RequestWithUser } from '@/common/types/request.types';
+import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
-import { JwtAuthGuard } from '../auth/guard/jwt-guard';
+import { ApiCreateOperation, ApiFindOperation } from '@/common/decorators/swagger';
+import { RequestWithUser } from '@/common/types/request.types';
+import { checkId } from '@/common/utils/service/check-id';
 
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
 import { GetWishlistDto } from './dto/get-wishlist.dto';
@@ -19,18 +20,22 @@ export class WishlistsController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiCreateOperation('Создание wishlist-а', GetWishlistDto)
-  create(@Req() req: RequestWithUser, @Body() createWishlistDto: CreateWishlistDto) {
+  create(@Req() req: RequestWithUser, @Body() createWishlistDto: CreateWishlistDto): Promise<GetWishlistDto> {
     return this.wishlistsService.create(req.user, createWishlistDto);
   }
 
   @Get()
-  findAll() {
+  @ApiFindOperation('Получение списка wishlist-ов', GetWishlistDto, true)
+  findAll(): Promise<GetWishlistDto[]> {
     return this.wishlistsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishlistsService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение wishlist-а', GetWishlistDto, true)
+  findOne(@Param('id') id: string): Promise<GetWishlistDto> {
+    return this.wishlistsService.findOne(checkId(id));
   }
 
   @Patch(':id')
