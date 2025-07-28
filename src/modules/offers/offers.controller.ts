@@ -5,6 +5,7 @@ import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
 import { ApiCreateOperation, ApiFindOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
+import { checkId } from '@/common/utils/service/check-id';
 
 import { CreateOfferDto } from './dto/create-offer.dto';
 import { GetOfferDto } from './dto/get-offer.dto';
@@ -35,6 +36,6 @@ export class OffersController {
   @ApiBearerAuth()
   @ApiFindOperation('Получение заявки', GetOfferDto)
   findOne(@Param('id') id: string) {
-    return this.offersService.findOne(+id);
+    return this.offersService.findOne(checkId(id));
   }
 }

@@ -6,6 +6,7 @@ import { Wish } from '@/modules/wishes/entities/wish.entity';
 
 import { ApiDeleteOperation, ApiFindOperation, ApiUpdateOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
+import { checkId } from '@/common/utils/service/check-id';
 
 import { FindUsersDto } from './dto/find-user.dtor';
 import { UserProfileResponseDto, UserPublicProfileResponseDto } from './dto/get-user.dto';
@@ -72,6 +73,6 @@ export class UsersController {
   @ApiBearerAuth()
   @ApiDeleteOperation('Удаление пользователя')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    return this.usersService.remove(checkId(id));
   }
 }

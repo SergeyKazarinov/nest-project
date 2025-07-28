@@ -10,6 +10,7 @@ import {
   ApiUpdateOperation,
 } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
+import { checkId } from '@/common/utils/service/check-id';
 
 import { CreateWishDto } from './dto/create-wish.dto';
 import { GetWishDto } from './dto/get-wish.dto';
@@ -49,7 +50,7 @@ export class WishesController {
   @ApiBearerAuth()
   @ApiFindOperation('Получение подарка по id', GetWishDto)
   findOne(@Param('id') id: string) {
-    return this.wishesService.findOne(+id);
+    return this.wishesService.findOne(checkId(id));
   }
 
   @Patch(':id')
@@ -57,7 +58,7 @@ export class WishesController {
   @ApiBearerAuth()
   @ApiUpdateOperation('Обновление подарка', GetWishDto)
   update(@Req() req: RequestWithUser, @Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
-    return this.wishesService.update(req.user, +id, updateWishDto);
+    return this.wishesService.update(req.user, checkId(id), updateWishDto);
   }
 
   @Delete(':id')
@@ -65,7 +66,7 @@ export class WishesController {
   @ApiBearerAuth()
   @ApiDeleteOperation('Удаление подарка')
   remove(@Req() req: RequestWithUser, @Param('id') id: string) {
-    return this.wishesService.remove(req.user, +id);
+    return this.wishesService.remove(req.user, checkId(id));
   }
 
   @Post(':id/copy')
@@ -73,6 +74,6 @@ export class WishesController {
   @ApiBearerAuth()
   @ApiCreateOperation('Копирование подарка', GetWishDto)
   copy(@Req() req: RequestWithUser, @Param('id') id: string) {
-    return this.wishesService.copy(req.user, +id);
+    return this.wishesService.copy(req.user, checkId(id));
   }
 }

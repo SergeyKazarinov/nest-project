@@ -13,8 +13,14 @@ export const ERROR_MESSAGES = {
     OFFER_FOR_WISH_WITH_RAISED: 'Нельзя скинуться на подарок, на который уже собраны деньги',
     OFFER_FOR_WISH_WITH_RAISED_AND_MORE: 'Сумма собранных средств не может превышать стоимость подарка',
   },
+  WISHLIST: {
+    NOT_FOUND: 'Wishlist не найден',
+  },
   VALIDATION: {
     PRICE_INVALID: 'Цена должна быть положительным числом с максимум 2 знаками после запятой',
   },
   FORBIDDEN: 'У вас нет прав на редактирование',
+  BAD_REQUEST: {
+    ID_NOT_NUMBER: 'Id должно быть числом',
+  },
 } as const;
