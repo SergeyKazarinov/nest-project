@@ -15,6 +15,7 @@ export const ERROR_MESSAGES = {
   },
   WISHLIST: {
     NOT_FOUND: 'Wishlist не найден',
+    UPDATE_FAILED: 'Не удалось обновить wishlist',
   },
   VALIDATION: {
     PRICE_INVALID: 'Цена должна быть положительным числом с максимум 2 знаками после запятой',

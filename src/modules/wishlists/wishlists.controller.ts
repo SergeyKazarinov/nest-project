@@ -3,7 +3,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
-import { ApiCreateOperation, ApiFindOperation } from '@/common/decorators/swagger';
+import { ApiCreateOperation, ApiFindOperation, ApiUpdateOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
 import { checkId } from '@/common/utils/service/check-id';
 
@@ -39,8 +39,15 @@ export class WishlistsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishlistDto: UpdateWishlistDto) {
-    return this.wishlistsService.update(+id, updateWishlistDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiUpdateOperation('Обновление wishlist-а', GetWishlistDto)
+  update(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() updateWishlistDto: UpdateWishlistDto,
+  ): Promise<GetWishlistDto> {
+    return this.wishlistsService.update(req.user, checkId(id), updateWishlistDto);
   }
 
   @Delete(':id')
