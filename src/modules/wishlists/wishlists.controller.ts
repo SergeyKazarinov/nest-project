@@ -1,6 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth } from '@nestjs/swagger';
+
+import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
+
+import {
+  ApiCreateOperation,
+  ApiDeleteOperation,
+  ApiFindOperation,
+  ApiUpdateOperation,
+} from '@/common/decorators/swagger';
+import { RequestWithUser } from '@/common/types/request.types';
+import { checkId } from '@/common/utils/service/check-id';
 
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
+import { GetWishlistDto } from './dto/get-wishlist.dto';
 import { UpdateWishlistDto } from './dto/update-wishlist.dto';
 import { WishlistsService } from './wishlists.service';
 
@@ -9,27 +22,44 @@ export class WishlistsController {
   constructor(private readonly wishlistsService: WishlistsService) {}
 
   @Post()
-  create(@Body() createWishlistDto: CreateWishlistDto) {
-    return this.wishlistsService.create(createWishlistDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiCreateOperation('Создание wishlist-а', GetWishlistDto)
+  create(@Req() req: RequestWithUser, @Body() createWishlistDto: CreateWishlistDto): Promise<GetWishlistDto> {
+    return this.wishlistsService.create(req.user, createWishlistDto);
   }
 
   @Get()
-  findAll() {
+  @ApiFindOperation('Получение списка wishlist-ов', GetWishlistDto, true)
+  findAll(): Promise<GetWishlistDto[]> {
     return this.wishlistsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.wishlistsService.findOne(+id);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiFindOperation('Получение wishlist-а', GetWishlistDto, true)
+  findOne(@Param('id') id: string): Promise<GetWishlistDto> {
+    return this.wishlistsService.findOne(checkId(id));
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateWishlistDto: UpdateWishlistDto) {
-    return this.wishlistsService.update(+id, updateWishlistDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiUpdateOperation('Обновление wishlist-а', GetWishlistDto)
+  update(
+    @Req() req: RequestWithUser,
+    @Param('id') id: string,
+    @Body() updateWishlistDto: UpdateWishlistDto,
+  ): Promise<GetWishlistDto> {
+    return this.wishlistsService.update(req.user, checkId(id), updateWishlistDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishlistsService.remove(+id);
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiDeleteOperation('Удаление wishlist-а')
+  remove(@Req() req: RequestWithUser, @Param('id') id: string) {
+    return this.wishlistsService.remove(req.user, checkId(id));
   }
 }
