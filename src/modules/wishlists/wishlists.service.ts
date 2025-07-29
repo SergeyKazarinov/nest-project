@@ -1,9 +1,10 @@
-import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
-import { ERROR_MESSAGES } from '@/common/consts/error';
+import { checkForbidden } from '@/common/utils/service/check-forbidden';
 import { checkHasEntity } from '@/common/utils/service/check-has-entity';
+import { removeEntity } from '@/common/utils/service/remove-entity';
 import { TransactionService } from '@/common/utils/service/transaction';
 
 import { User } from '../users/entities/user.entity';
@@ -28,18 +29,11 @@ export class WishlistsService {
   }
 
   private async checkWishlistOwner(user: User, id: number) {
-    const foundWishlist = await this.wishlistsRepository.findOne({
-      where: { id },
-      relations: ['owner', 'items'],
-    });
+    const foundWishlist = await this.findOne(id);
 
-    const wishlist = checkHasEntity(foundWishlist, 'WISHLIST');
+    checkForbidden(user, foundWishlist, foundWishlist.owner.id);
 
-    if (wishlist.owner.id !== user.id) {
-      throw new ForbiddenException(ERROR_MESSAGES.FORBIDDEN);
-    }
-
-    return wishlist;
+    return foundWishlist;
   }
 
   async create(user: User, createWishlistDto: CreateWishlistDto) {
@@ -78,12 +72,7 @@ export class WishlistsService {
   async remove(user: User, id: number) {
     await this.checkWishlistOwner(user, id);
 
-    const removedResult = await this.wishlistsRepository.delete(id);
-
-    if (removedResult.affected === 0) {
-      throw new InternalServerErrorException(ERROR_MESSAGES.WISHLIST.REMOVE_FAILED);
-    }
-
+    await removeEntity<Wishlist>(this.wishlistsRepository, id, 'WISHLIST');
     return {};
   }
 }

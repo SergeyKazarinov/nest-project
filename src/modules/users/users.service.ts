@@ -1,12 +1,14 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, ILike, Repository } from 'typeorm';
 
 import { Wish } from '@/modules/wishes/entities/wish.entity';
 
 import { ERROR_MESSAGES } from '@/common/consts/error';
+import { checkForbidden } from '@/common/utils/service/check-forbidden';
 import { checkHasEntity } from '@/common/utils/service/check-has-entity';
 import { hashPassword } from '@/common/utils/service/hash-password';
+import { removeEntity } from '@/common/utils/service/remove-entity';
 
 import { PUBLIC_USER_PROFILE_SELECT } from './const/orm';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -94,10 +96,11 @@ export class UsersService {
   }
 
   async remove(id: number) {
-    const result = await this.UsersRepository.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(ERROR_MESSAGES.USER.NOT_FOUND);
-    }
+    const user = await this.findUser(id);
+
+    checkForbidden(user, user, user.id);
+
+    await removeEntity(this.UsersRepository, id, 'USER');
     return {};
   }
 }

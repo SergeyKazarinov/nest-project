@@ -7,6 +7,7 @@ import { User } from '@/modules/users/entities/user.entity';
 import { ERROR_MESSAGES } from '@/common/consts/error';
 import { checkForbidden } from '@/common/utils/service/check-forbidden';
 import { checkHasEntity } from '@/common/utils/service/check-has-entity';
+import { removeEntity } from '@/common/utils/service/remove-entity';
 import { TransactionService } from '@/common/utils/service/transaction';
 
 import { GET_WISH_DTO_ORM_OPTIONS } from './const/orm';
@@ -26,7 +27,7 @@ export class WishesService {
     this.transactionService = new TransactionService(dataSource);
   }
 
-  async checkEditPermissions(user: User, id: Wish['id']) {
+  private async checkEditPermissions(user: User, id: Wish['id']) {
     const wishData = await this.findOne(id);
 
     const wish = checkHasEntity(wishData, 'WISH');
@@ -95,8 +96,9 @@ export class WishesService {
   async remove(user: User, id: Wish['id']) {
     await this.checkEditPermissions(user, id);
 
-    await this.wishRepository.delete(id);
-    return;
+    await removeEntity(this.wishRepository, id, 'WISH');
+
+    return {};
   }
 
   async copy(user: User, id: Wish['id']) {

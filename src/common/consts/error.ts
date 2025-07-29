@@ -2,10 +2,12 @@ export const ERROR_MESSAGES = {
   USER: {
     NOT_FOUND: 'Пользователь не найден',
     ALREADY_EXISTS: 'Пользователь уже существует',
+    REMOVE_FAILED: 'Не удалось удалить пользователя',
   },
   WISH: {
     NOT_FOUND: 'Подарок не найден',
     PRICE_CANNOT_BE_CHANGED: 'Нельзя изменить цену подарка, на который уже есть желающие скинуться',
+    REMOVE_FAILED: 'Не удалось удалить подарок',
   },
   OFFER: {
     NOT_FOUND: 'Заявка не найдена',

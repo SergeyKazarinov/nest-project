@@ -1,6 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
+import { ERROR_MESSAGES } from '../consts/error';
 import { ErrorType } from '../types/error.types';
 
 interface ErrorDtoConfig {
@@ -65,7 +66,7 @@ export const UnauthorizedErrorDto = ErrorFactory.create({
 
 export const ForbiddenErrorDto = ErrorFactory.create({
   statusCode: HttpStatus.FORBIDDEN,
-  message: 'Доступ запрещен',
+  message: ERROR_MESSAGES.FORBIDDEN,
   errorType: ErrorType.FORBIDDEN,
 });
 
