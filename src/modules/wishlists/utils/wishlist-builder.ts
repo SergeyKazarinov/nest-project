@@ -8,39 +8,53 @@ import { Wish } from '@/modules/wishes/entities/wish.entity';
 import { ERROR_MESSAGES } from '@/common/consts/error';
 import { checkHasEntity } from '@/common/utils/service/check-has-entity';
 
+import { CreateWishlistDto } from '../dto/create-wishlist.dto';
 import { UpdateWishlistDto } from '../dto/update-wishlist.dto';
 import { Wishlist } from '../entities/wishlist.entity';
 
 export class WishlistBuilder {
   private id: number;
-  private wishlist: Wishlist;
+  private wishlist: Wishlist = new Wishlist();
   private items: Wish[];
   private updateFields: Partial<Wishlist> = {};
   private owner: User;
 
   constructor(private readonly manager: EntityManager) {}
 
-  private async getItems(itemsId?: number[]): Promise<void> {
+  private async setItems(itemsId?: number[]): Promise<void> {
     this.items = this.wishlist.items;
 
     if (itemsId) {
-      const newItems = await this.manager.find(Wish, {
-        ...GET_WISH_DTO_ORM_OPTIONS,
-        where: { id: In(itemsId) },
-      });
+      const newItems = await this.getWishlistItems(itemsId);
 
-      this.wishlist.items = newItems;
+      this.items = newItems;
     }
   }
 
+  private async getWishlistItems(itemsId: number[]) {
+    return this.manager.find(Wish, {
+      ...GET_WISH_DTO_ORM_OPTIONS,
+      where: { id: In(itemsId) },
+    });
+  }
+
   async updateDirector(id: number, wishlist: Wishlist, updateWishlistDto: UpdateWishlistDto) {
-    return await this.withId(id)
+    await this.withId(id)
       .withWishlist(wishlist)
       .withName(updateWishlistDto.name)
       .withDescription(updateWishlistDto.description)
       .withImage(updateWishlistDto.image)
-      .withItems(updateWishlistDto.itemsId)
-      .update();
+      .withWishlistItems(updateWishlistDto.itemsId);
+    return this.update();
+  }
+
+  async createDirector(user: User, createWishlistDto: CreateWishlistDto) {
+    await this.withOwner(user)
+      .withName(createWishlistDto.name)
+      .withDescription(createWishlistDto.description)
+      .withImage(createWishlistDto.image)
+      .withWishlistItems(createWishlistDto.itemsId);
+    return this.create();
   }
 
   withId(id: number): this {
@@ -76,9 +90,18 @@ export class WishlistBuilder {
     return this;
   }
 
-  withItems(itemsId?: number[]): this {
-    this.getItems(itemsId);
+  async withWishlistItems(itemsId?: number[]): Promise<this> {
+    await this.setItems(itemsId);
     return this;
+  }
+
+  private async findWishlist(id: number) {
+    const newWishlist = await this.manager.findOne(Wishlist, {
+      where: { id },
+      relations: ['owner', 'items'],
+    });
+
+    return checkHasEntity(newWishlist, 'WISHLIST');
   }
 
   async update() {
@@ -94,11 +117,18 @@ export class WishlistBuilder {
       }
     }
 
-    const newWishlist = await this.manager.findOne(Wishlist, {
-      where: { id: this.id },
-      relations: ['owner', 'items'],
+    return await this.findWishlist(this.id);
+  }
+
+  async create() {
+    const newWishlist = this.manager.create(Wishlist, {
+      ...this.updateFields,
+      owner: this.owner,
+      items: this.items,
     });
 
-    return checkHasEntity(newWishlist, 'WISHLIST');
+    await this.manager.save(Wishlist, newWishlist);
+
+    return await this.findWishlist(newWishlist.id);
   }
 }

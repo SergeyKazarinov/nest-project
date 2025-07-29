@@ -1,13 +1,12 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, In, Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 import { ERROR_MESSAGES } from '@/common/consts/error';
 import { checkHasEntity } from '@/common/utils/service/check-has-entity';
 import { TransactionService } from '@/common/utils/service/transaction';
 
 import { User } from '../users/entities/user.entity';
-import { GET_WISH_DTO_ORM_OPTIONS } from '../wishes/const/orm';
 import { Wish } from '../wishes/entities/wish.entity';
 
 import { CreateWishlistDto } from './dto/create-wishlist.dto';
@@ -43,30 +42,12 @@ export class WishlistsService {
     return wishlist;
   }
 
-  private async getWishlistItems(itemsId: number[]) {
-    return this.wishesRepository.find({
-      ...GET_WISH_DTO_ORM_OPTIONS,
-      where: { id: In(itemsId) },
-    });
-  }
-
   async create(user: User, createWishlistDto: CreateWishlistDto) {
-    const wishlistItems = await this.getWishlistItems(createWishlistDto.itemsId);
+    return await this.transactionService.run(async (manager) => {
+      const builder = new WishlistBuilder(manager);
 
-    const wishlist = this.wishlistsRepository.create({
-      ...createWishlistDto,
-      items: wishlistItems,
-      owner: user,
+      return await builder.createDirector(user, createWishlistDto);
     });
-
-    await this.wishlistsRepository.save(wishlist);
-
-    const foundWishlist = await this.wishlistsRepository.findOne({
-      where: { id: wishlist.id },
-      relations: ['owner', 'items'],
-    });
-
-    return checkHasEntity(foundWishlist, 'WISHLIST');
   }
 
   findAll() {
