@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
@@ -75,7 +75,15 @@ export class WishlistsService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wishlist`;
+  async remove(user: User, id: number) {
+    await this.checkWishlistOwner(user, id);
+
+    const removedResult = await this.wishlistsRepository.delete(id);
+
+    if (removedResult.affected === 0) {
+      throw new InternalServerErrorException(ERROR_MESSAGES.WISHLIST.REMOVE_FAILED);
+    }
+
+    return {};
   }
 }
