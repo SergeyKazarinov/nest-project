@@ -83,6 +83,7 @@ export class WishesController {
     responseType: undefined,
     notFoundErrorMessage: 'WISH',
     deletedDescription: 'Подарок успешно удален',
+    isAuth: true,
   })
   remove(@Req() req: RequestWithUser, @Param('id') id: string) {
     return this.wishesService.remove(req.user, checkId(id));
