@@ -2,11 +2,11 @@ import { HttpStatus } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
 import { ERROR_MESSAGES } from '../consts/error';
-import { ErrorType } from '../types/error.types';
+import { ErrorType, TNotFoundErrorKey } from '../types/error.types';
 
 interface ErrorDtoConfig {
   statusCode: HttpStatus;
-  message: string;
+  message: string | string[];
   errorType: ErrorType;
 }
 
@@ -42,19 +42,20 @@ export class ErrorFactory {
 
 export const BadRequestErrorDto = ErrorFactory.create({
   statusCode: HttpStatus.BAD_REQUEST,
-  message: 'Некорректные данные',
+  message: ['Некорректные данные'],
   errorType: ErrorType.BAD_REQUEST,
 });
 
-export const NotFoundErrorDto = ErrorFactory.create({
-  statusCode: HttpStatus.NOT_FOUND,
-  message: 'Ресурс не найден',
-  errorType: ErrorType.NOT_FOUND,
-});
+export const NotFoundErrorDto = (notFoundErrorKey: TNotFoundErrorKey) =>
+  ErrorFactory.create({
+    statusCode: HttpStatus.NOT_FOUND,
+    message: ERROR_MESSAGES[notFoundErrorKey].NOT_FOUND,
+    errorType: ErrorType.NOT_FOUND,
+  });
 
 export const InternalServerErrorDto = ErrorFactory.create({
   statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-  message: 'Внутренняя ошибка сервера',
+  message: ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
   errorType: ErrorType.INTERNAL_SERVER_ERROR,
 });
 
@@ -72,6 +73,12 @@ export const ForbiddenErrorDto = ErrorFactory.create({
 
 export const RequestTimeoutErrorDto = ErrorFactory.create({
   statusCode: HttpStatus.REQUEST_TIMEOUT,
-  message: 'Время ожидания запроса истекло',
+  message: ERROR_MESSAGES.REQUEST_TIMEOUT,
   errorType: ErrorType.REQUEST_TIMEOUT,
+});
+
+export const ForbidderErrorDto = ErrorFactory.create({
+  statusCode: HttpStatus.FORBIDDEN,
+  message: ERROR_MESSAGES.FORBIDDEN,
+  errorType: ErrorType.FORBIDDEN,
 });

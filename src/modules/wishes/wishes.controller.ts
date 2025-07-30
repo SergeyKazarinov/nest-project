@@ -1,14 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
-import {
-  ApiCreateOperation,
-  ApiDeleteOperation,
-  ApiFindOperation,
-  ApiUpdateOperation,
-} from '@/common/decorators/swagger';
+import { ApiSwaggerOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
 import { checkId } from '@/common/utils/service/check-id';
 
@@ -23,56 +17,85 @@ export class WishesController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiCreateOperation('Создание подарка', GetWishDto)
+  @ApiSwaggerOperation({
+    summary: 'Создание подарка',
+    responseType: GetWishDto,
+    createdDescription: 'Подарок успешно создан',
+    isAuth: true,
+  })
   create(@Req() req: RequestWithUser, @Body() createWishDto: CreateWishDto) {
     return this.wishesService.create(req.user, createWishDto);
   }
 
   @Get('/last')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiFindOperation('Получение списка последних подарков', GetWishDto, true)
+  @ApiSwaggerOperation({
+    summary: 'Получение списка последних подарков',
+    responseType: GetWishDto,
+    isArray: true,
+    isAuth: true,
+  })
   findLast() {
     return this.wishesService.findLast();
   }
 
   @Get('/top')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiFindOperation('Получение списка популярных подарков', GetWishDto, true)
+  @ApiSwaggerOperation({
+    summary: 'Получение списка популярных подарков',
+    responseType: GetWishDto,
+    isArray: true,
+    isAuth: true,
+  })
   findTop() {
     return this.wishesService.findTop();
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiFindOperation('Получение подарка по id', GetWishDto)
+  @ApiSwaggerOperation({
+    summary: 'Получение подарка по id',
+    responseType: GetWishDto,
+    isAuth: true,
+    notFoundErrorMessage: 'WISH',
+  })
   findOne(@Param('id') id: string) {
     return this.wishesService.findOne(checkId(id));
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiUpdateOperation('Обновление подарка', GetWishDto)
+  @ApiSwaggerOperation({
+    summary: 'Обновление подарка',
+    responseType: GetWishDto,
+    isAuth: true,
+    notFoundErrorMessage: 'WISH',
+    updatedDescription: 'Подарок успешно обновлен',
+  })
   update(@Req() req: RequestWithUser, @Param('id') id: string, @Body() updateWishDto: UpdateWishDto) {
     return this.wishesService.update(req.user, checkId(id), updateWishDto);
   }
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiDeleteOperation('Удаление подарка')
+  @ApiSwaggerOperation({
+    summary: 'Удаление подарка',
+    responseType: undefined,
+    notFoundErrorMessage: 'WISH',
+    deletedDescription: 'Подарок успешно удален',
+  })
   remove(@Req() req: RequestWithUser, @Param('id') id: string) {
     return this.wishesService.remove(req.user, checkId(id));
   }
 
   @Post(':id/copy')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiCreateOperation('Копирование подарка', GetWishDto)
+  @ApiSwaggerOperation({
+    summary: 'Копирование подарка',
+    responseType: GetWishDto,
+    createdDescription: 'Подарок успешно скопирован',
+    isAuth: true,
+  })
   copy(@Req() req: RequestWithUser, @Param('id') id: string) {
     return this.wishesService.copy(req.user, checkId(id));
   }

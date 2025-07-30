@@ -1,14 +1,8 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
-import {
-  ApiCreateOperation,
-  ApiDeleteOperation,
-  ApiFindOperation,
-  ApiUpdateOperation,
-} from '@/common/decorators/swagger';
+import { ApiSwaggerOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
 import { checkId } from '@/common/utils/service/check-id';
 
@@ -23,30 +17,48 @@ export class WishlistsController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiCreateOperation('Создание wishlist-а', GetWishlistDto)
+  @ApiSwaggerOperation({
+    summary: 'Создание wishlist-а',
+    responseType: GetWishlistDto,
+    createdDescription: 'Wishlist успешно создан',
+    isAuth: true,
+  })
   create(@Req() req: RequestWithUser, @Body() createWishlistDto: CreateWishlistDto): Promise<GetWishlistDto> {
     return this.wishlistsService.create(req.user, createWishlistDto);
   }
 
   @Get()
-  @ApiFindOperation('Получение списка wishlist-ов', GetWishlistDto, true)
+  @ApiSwaggerOperation({
+    summary: 'Получение списка wishlist-ов',
+    responseType: GetWishlistDto,
+    isArray: true,
+  })
   findAll(): Promise<GetWishlistDto[]> {
     return this.wishlistsService.findAll();
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiFindOperation('Получение wishlist-а', GetWishlistDto, true)
+  @ApiSwaggerOperation({
+    summary: 'Получение wishlist-а',
+    responseType: GetWishlistDto,
+    isAuth: true,
+    isArray: true,
+    notFoundErrorMessage: 'WISHLIST',
+  })
   findOne(@Param('id') id: string): Promise<GetWishlistDto> {
     return this.wishlistsService.findOne(checkId(id));
   }
 
   @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiUpdateOperation('Обновление wishlist-а', GetWishlistDto)
+  @ApiSwaggerOperation({
+    summary: 'Обновление wishlist-а',
+    responseType: GetWishlistDto,
+    isAuth: true,
+    updatedDescription: 'Wishlist успешно обновлен',
+    notFoundErrorMessage: 'WISHLIST',
+  })
   update(
     @Req() req: RequestWithUser,
     @Param('id') id: string,
@@ -57,8 +69,13 @@ export class WishlistsController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiDeleteOperation('Удаление wishlist-а')
+  @ApiSwaggerOperation({
+    summary: 'Удаление wishlist-а',
+    responseType: undefined,
+    isAuth: true,
+    deletedDescription: 'Wishlist успешно удален',
+    notFoundErrorMessage: 'WISHLIST',
+  })
   remove(@Req() req: RequestWithUser, @Param('id') id: string) {
     return this.wishlistsService.remove(req.user, checkId(id));
   }

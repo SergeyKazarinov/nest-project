@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth } from '@nestjs/swagger';
 
 import { JwtAuthGuard } from '@/modules/auth/guard/jwt-guard';
 
-import { ApiCreateOperation, ApiFindOperation } from '@/common/decorators/swagger';
+import { ApiSwaggerOperation } from '@/common/decorators/swagger';
 import { RequestWithUser } from '@/common/types/request.types';
 import { checkId } from '@/common/utils/service/check-id';
 
@@ -17,24 +16,36 @@ export class OffersController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiCreateOperation('Создание заявки', GetOfferDto)
+  @ApiSwaggerOperation({
+    summary: 'Создание заявки',
+    responseType: GetOfferDto,
+    createdDescription: 'Заявка успешно создана',
+    isAuth: true,
+  })
   create(@Req() req: RequestWithUser, @Body() createOfferDto: CreateOfferDto) {
     return this.offersService.create(req.user, createOfferDto);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiFindOperation('Получение списка заявок', GetOfferDto, true)
+  @ApiSwaggerOperation({
+    summary: 'Получение списка заявок',
+    responseType: GetOfferDto,
+    isArray: true,
+    isAuth: true,
+  })
   findAll() {
     return this.offersService.findAll();
   }
 
   @Get(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiFindOperation('Получение заявки', GetOfferDto)
+  @ApiSwaggerOperation({
+    summary: 'Получение заявки',
+    responseType: GetOfferDto,
+    isAuth: true,
+    notFoundErrorMessage: 'OFFER',
+  })
   findOne(@Param('id') id: string) {
     return this.offersService.findOne(checkId(id));
   }

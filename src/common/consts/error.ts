@@ -23,8 +23,10 @@ export const ERROR_MESSAGES = {
   VALIDATION: {
     PRICE_INVALID: 'Цена должна быть положительным числом с максимум 2 знаками после запятой',
   },
-  FORBIDDEN: 'У вас нет прав на редактирование',
   BAD_REQUEST: {
     ID_NOT_NUMBER: 'Id должно быть числом',
   },
+  FORBIDDEN: 'У вас нет прав на редактирование',
+  INTERNAL_SERVER_ERROR: 'Во время выполнения запроса произошла ошибка',
+  REQUEST_TIMEOUT: 'Время ожидания запроса истекло',
 } as const;
