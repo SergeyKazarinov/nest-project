@@ -6,7 +6,11 @@ import { InternalServerErrorDto, RequestTimeoutErrorDto } from '../dto/error.dto
 
 export const swaggerConfig = new DocumentBuilder()
   .setTitle('NestJS API')
-  .setDescription('NestJS API description')
+  .setDescription(
+    `
+    Сервис для создания и обновления списков желаний, а также для создания и обновления заявок на подарки
+В данном сервисе каждый зарегистрированный пользователь может рассказать о том, какой подарок он бы хотел получить, а также скинуться на подарок для другого пользователя, указав сумму, которую готов на это потратить.`,
+  )
   .setVersion('1.0')
   .addBearerAuth()
   .addGlobalResponse({
