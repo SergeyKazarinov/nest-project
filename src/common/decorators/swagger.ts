@@ -1,78 +1,124 @@
-import { applyDecorators, Type } from '@nestjs/common';
+import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiResponseNoStatusOptions,
+  ApiResponseCommonMetadata,
+  ApiResponseExamples,
 } from '@nestjs/swagger';
 
-import { BadRequestErrorDto } from '../dto/error.dto';
+import { ERROR_MESSAGES } from '../consts/error';
+import { BadRequestErrorDto, ForbidderErrorDto, NotFoundErrorDto } from '../dto/error.dto';
+import { TNotFoundErrorKey } from '../types/error.types';
 
-export const ApiCreateOperation = (summary: string, responseType: Type) =>
-  applyDecorators(
-    ApiOperation({ summary }),
-    ApiCreatedResponse({
-      description: 'Ресурс успешно создан',
-      type: responseType,
-    }),
-    ApiBadRequestResponse({
-      description: 'Некорректные данные',
-      type: BadRequestErrorDto,
-    }),
-  );
+interface ISwaggerDecoratorFactoryConfig {
+  summary: ApiResponseExamples['summary'];
+  responseType: ApiResponseCommonMetadata['type'];
+  isAuth?: boolean;
+  isArray?: boolean;
+  isLogin?: boolean;
+  okDescription?: string;
+  createdDescription?: string;
+  updatedDescription?: string;
+  deletedDescription?: string;
+  notFoundErrorMessage?: TNotFoundErrorKey;
+}
 
-export const ApiFindOperation = (summary: string, responseType: Type, isArray: boolean = false) =>
-  applyDecorators(
-    ApiOperation({ summary }),
-    ApiOkResponse({
-      description: 'Запрос выполнен успешно',
-      type: isArray ? [responseType] : responseType,
-    }),
-    ApiBadRequestResponse({
-      description: 'Некорректные параметры запроса',
-      type: BadRequestErrorDto,
-    }),
-  );
+class SwaggerDecoratorFactory {
+  static create(config: ISwaggerDecoratorFactoryConfig) {
+    const {
+      summary,
+      responseType,
+      isAuth = false,
+      isArray = false,
+      isLogin = false,
+      okDescription,
+      createdDescription,
+      updatedDescription,
+      deletedDescription,
+      notFoundErrorMessage,
+    } = config;
 
-export const ApiUpdateOperation = (summary: string, responseType: Type) =>
-  applyDecorators(
-    ApiOperation({ summary }),
-    ApiOkResponse({
-      description: 'Ресурс успешно обновлен',
-      type: responseType,
-    }),
-    ApiBadRequestResponse({
-      description: 'Некорректные данные',
-      type: BadRequestErrorDto,
-    }),
-  );
+    const decorators = [
+      ApiOperation({ summary }),
+      ApiBadRequestResponse({
+        description: 'Некорректные данные',
+        type: BadRequestErrorDto,
+        isArray,
+      }),
+    ];
 
-export const ApiDeleteOperation = (summary: string) =>
-  applyDecorators(
-    ApiOperation({ summary }),
-    ApiOkResponse({
-      description: 'Ресурс успешно удален',
-    }),
-    ApiBadRequestResponse({
-      description: 'Некорректные параметры запроса',
-      type: BadRequestErrorDto,
-    }),
-  );
+    if (isAuth) {
+      decorators.push(ApiBearerAuth());
+    }
 
-export const ApiLoginOperation = (summary: string, options: ApiResponseNoStatusOptions) =>
-  applyDecorators(
-    ApiOperation({ summary }),
-    ApiOkResponse({
-      description: 'Пользователь успешно авторизован',
-      example: {
-        access_token:
-          'eyJhbGciOisIUzI1NiIsInR5cCI6IkpXVCJ9.wyJzdWIiOjUsImlhdCI6MTc1MzM0MTQ4MH0.Ix-54mlAh1AxN7sNwXH7S9_fJ9HqMFqx-Qq8eAPy0DI',
-      },
-      ...options,
-    }),
-    ApiBadRequestResponse({
-      description: 'Некорректные данные',
-      type: BadRequestErrorDto,
-    }),
-  );
+    if (okDescription) {
+      decorators.push(
+        ApiOkResponse({
+          description: okDescription,
+          type: isArray ? [() => responseType] : responseType,
+        }),
+      );
+    }
+
+    if (createdDescription) {
+      decorators.push(
+        ApiCreatedResponse({
+          description: createdDescription,
+          type: responseType,
+        }),
+      );
+    }
+
+    if (updatedDescription) {
+      decorators.push(
+        ApiOkResponse({
+          description: updatedDescription,
+          type: responseType,
+        }),
+        ApiForbiddenResponse({
+          description: ERROR_MESSAGES.FORBIDDEN,
+          type: ForbidderErrorDto,
+        }),
+      );
+    }
+
+    if (deletedDescription) {
+      decorators.push(
+        ApiOkResponse({
+          description: deletedDescription,
+        }),
+        ApiForbiddenResponse({
+          description: ERROR_MESSAGES.FORBIDDEN,
+          type: ForbidderErrorDto,
+        }),
+      );
+    }
+
+    if (notFoundErrorMessage) {
+      decorators.push(
+        ApiNotFoundResponse({
+          description: ERROR_MESSAGES[notFoundErrorMessage].NOT_FOUND,
+          type: NotFoundErrorDto(notFoundErrorMessage),
+        }),
+      );
+    }
+
+    if (isLogin) {
+      decorators.push(
+        ApiOkResponse({
+          description: 'Пользователь успешно авторизован',
+          type: responseType,
+        }),
+      );
+    }
+
+    return applyDecorators(...decorators);
+  }
+}
+
+export const ApiSwaggerOperation = (config: ISwaggerDecoratorFactoryConfig) => SwaggerDecoratorFactory.create(config);
